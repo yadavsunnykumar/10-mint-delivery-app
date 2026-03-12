@@ -1,0 +1,14 @@
+[
+  {
+    "_id": "u1",
+    "name": "Amit Sharma",
+    "phone": "9876543210",
+    "city": "Bangalore"
+  },
+  {
+    "_id": "u2",
+    "name": "Priya Verma",
+    "phone": "9876501234",
+    "city": "Mumbai"
+  }
+]

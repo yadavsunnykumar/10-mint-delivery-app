@@ -1,0 +1,9 @@
+[
+  { "date": "2025-01-01", "product_id": "p1", "units_sold": 120 },
+  { "date": "2025-01-02", "product_id": "p1", "units_sold": 140 },
+  { "date": "2025-01-03", "product_id": "p1", "units_sold": 160 },
+
+  { "date": "2025-01-01", "product_id": "p4", "units_sold": 90 },
+  { "date": "2025-01-02", "product_id": "p4", "units_sold": 110 },
+  { "date": "2025-01-03", "product_id": "p4", "units_sold": 130 }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "_id": "w1",
+    "name": "Dark Store Indiranagar",
+    "location": { "lat": 12.9716, "lng": 77.6412 },
+    "active_riders": 8
+  },
+  {
+    "_id": "w2",
+    "name": "Dark Store Andheri",
+    "location": { "lat": 19.1197, "lng": 72.8468 },
+    "active_riders": 5
+  }
+]

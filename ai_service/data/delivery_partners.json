@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "r1",
+    "name": "Ravi Kumar",
+    "vehicle": "Bike",
+    "current_location": { "lat": 12.9721, "lng": 77.6405 },
+    "availability": true
+  },
+  {
+    "_id": "r2",
+    "name": "Suresh Patil",
+    "vehicle": "Scooter",
+    "current_location": { "lat": 19.1205, "lng": 72.8459 },
+    "availability": true
+  }
+]

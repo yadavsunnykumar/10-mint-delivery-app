@@ -1,0 +1,4 @@
+warehouse_load,order_size,distance_km,delivery_time_minutes
+8,3,5.055963837773717,12
+8,2,5.055963837773717,10
+5,2,848.930407941202,15

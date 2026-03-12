@@ -1,0 +1,62 @@
+[
+  {
+    "_id": "p1",
+    "name": "Amul Toned Milk 1L",
+    "category": "Dairy",
+    "brand": "Amul",
+    "price": 56,
+    "mrp": 60,
+    "sales": 320,
+    "tags": ["milk", "dairy", "amul", "1 litre"]
+  },
+  {
+    "_id": "p2",
+    "name": "Britannia Brown Bread",
+    "category": "Bakery",
+    "brand": "Britannia",
+    "price": 45,
+    "mrp": 50,
+    "sales": 210,
+    "tags": ["bread", "bakery", "brown bread"]
+  },
+  {
+    "_id": "p3",
+    "name": "Farm Fresh Eggs Pack of 6",
+    "category": "Dairy",
+    "brand": "FarmFresh",
+    "price": 72,
+    "mrp": 75,
+    "sales": 180,
+    "tags": ["eggs", "protein", "breakfast"]
+  },
+  {
+    "_id": "p4",
+    "name": "Tata Salt 1kg",
+    "category": "Grocery",
+    "brand": "Tata",
+    "price": 28,
+    "mrp": 30,
+    "sales": 450,
+    "tags": ["salt", "tata", "cooking"]
+  },
+  {
+    "_id": "p5",
+    "name": "Fortune Sunflower Oil 1L",
+    "category": "Grocery",
+    "brand": "Fortune",
+    "price": 135,
+    "mrp": 150,
+    "sales": 260,
+    "tags": ["oil", "sunflower oil", "cooking"]
+  },
+  {
+    "_id": "p6",
+    "name": "Banana Robusta 6 pcs",
+    "category": "Fruits",
+    "brand": "Local",
+    "price": 40,
+    "mrp": 45,
+    "sales": 300,
+    "tags": ["banana", "fruit", "fresh"]
+  }
+]
