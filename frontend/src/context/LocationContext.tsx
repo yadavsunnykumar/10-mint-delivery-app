@@ -23,7 +23,21 @@ interface LocationContextValue {
   closeModal: () => void;
 }
 
-const STORAGE_KEY = "zepto_location";
+// "everest_location_np" key replaces the old "everest_location" key to clear
+// any India-context locations (e.g. Andheri, Mumbai) stored from prior sessions.
+const STORAGE_KEY = "everest_location_np";
+
+// Nepal bounding box for stored-location validation
+const isNepalCoords = (lat: number, lng: number) =>
+  lat >= 26.3 && lat <= 30.5 && lng >= 79.9 && lng <= 88.3;
+
+const DEFAULT_LOCATION: DeliveryLocation = {
+  label: "Thamel",
+  area: "Thamel, Kathmandu",
+  city: "Kathmandu",
+  pincode: "44600",
+  coords: { lat: 27.7149, lng: 85.313 },
+};
 
 const LocationContext = createContext<LocationContextValue | null>(null);
 
@@ -31,9 +45,18 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   const [location, setLocationState] = useState<DeliveryLocation | null>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : null;
+      if (!saved) return DEFAULT_LOCATION;
+      const parsed = JSON.parse(saved) as DeliveryLocation;
+      // Discard locations outside Nepal
+      if (
+        parsed.coords &&
+        !isNepalCoords(parsed.coords.lat, parsed.coords.lng)
+      ) {
+        return DEFAULT_LOCATION;
+      }
+      return parsed;
     } catch {
-      return null;
+      return DEFAULT_LOCATION;
     }
   });
   const [modalOpen, setModalOpen] = useState(false);

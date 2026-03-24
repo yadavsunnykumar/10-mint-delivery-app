@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 const sections = [
   {
     title: "1. Acceptance of Terms",
-    body: `By accessing or using the Zepto platform (website, mobile application, or any related service), you agree to be bound by these Terms & Conditions and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing our services.`,
+    body: `By accessing or using the Everest Dash platform (website, mobile application, or any related service), you agree to be bound by these Terms & Conditions and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing our services.`,
   },
   {
     title: "2. Use of the Service",
@@ -13,35 +13,35 @@ const sections = [
   },
   {
     title: "3. Orders & Delivery",
-    body: `All orders are subject to product availability and delivery area coverage. Zepto reserves the right to cancel an order for reasons including but not limited to: product unavailability, payment failure, or delivery constraints. Delivery times are estimates and may vary due to unforeseen circumstances.`,
+    body: `All orders are subject to product availability and delivery area coverage. Everest Dash reserves the right to cancel an order for reasons including but not limited to: product unavailability, payment failure, or delivery constraints. Delivery times are estimates and may vary due to unforeseen circumstances.`,
   },
   {
     title: "4. Pricing & Payments",
-    body: `All prices are listed in Indian Rupees (₹) and are inclusive of applicable GST unless stated otherwise. Zepto reserves the right to modify prices at any time without prior notice. Payment must be completed at the time of order placement via our supported payment methods.`,
+    body: `All prices are listed in Nepali Rupees (रू) and are inclusive of applicable taxes unless stated otherwise. Everest Dash reserves the right to modify prices at any time without prior notice. Payment must be completed at the time of order placement via our supported payment methods.`,
   },
   {
     title: "5. Returns & Refunds",
-    body: `If you receive a damaged, expired, or incorrect item, please report it within 48 hours of delivery. Refunds will be issued to the original payment method or Zepto Wallet within 3–5 business days, subject to verification. Perishable goods are non-returnable unless objectively defective.`,
+    body: `If you receive a damaged, expired, or incorrect item, please report it within 48 hours of delivery. Refunds will be issued to the original payment method or Everest Dash Wallet within 3–5 business days, subject to verification. Perishable goods are non-returnable unless objectively defective.`,
   },
   {
     title: "6. Intellectual Property",
-    body: `All content on the Zepto platform — including logos, graphics, text, software and data — is the exclusive property of Zepto or its licensors. You may not reproduce, distribute or create derivative works from any content without express written permission.`,
+    body: `All content on the Everest Dash platform — including logos, graphics, text, software and data — is the exclusive property of Everest Dash or its licensors. You may not reproduce, distribute or create derivative works from any content without express written permission.`,
   },
   {
     title: "7. Limitation of Liability",
-    body: `Zepto shall not be liable for any indirect, incidental, special, consequential or punitive damages arising from your use of the service. Our total liability to you for any claim shall not exceed the amount paid by you for the order in question.`,
+    body: `Everest Dash shall not be liable for any indirect, incidental, special, consequential or punitive damages arising from your use of the service. Our total liability to you for any claim shall not exceed the amount paid by you for the order in question.`,
   },
   {
     title: "8. Governing Law",
-    body: `These Terms shall be governed by and construed in accordance with the laws of India. Any disputes arising under these terms shall be subject to the exclusive jurisdiction of the courts located in Mumbai, Maharashtra.`,
+    body: `These Terms shall be governed by and construed in accordance with the laws of Nepal. Any disputes arising under these terms shall be subject to the exclusive jurisdiction of the courts located in Kathmandu.`,
   },
   {
     title: "9. Changes to Terms",
-    body: `Zepto reserves the right to update these Terms & Conditions at any time. We will notify you of significant changes via email or in-app notification. Continued use of the service after changes constitutes acceptance of the revised terms.`,
+    body: `Everest Dash reserves the right to update these Terms & Conditions at any time. We will notify you of significant changes via email or in-app notification. Continued use of the service after changes constitutes acceptance of the revised terms.`,
   },
   {
     title: "10. Contact",
-    body: `For questions about these Terms, please contact us at legal@zepto.com or write to: Zepto Technologies Pvt. Ltd., Registered Office, Lower Parel, Mumbai – 400013, India.`,
+    body: `For questions about these Terms, please contact us at legal@everestdash.com or write to: Everest Dash Technologies Pvt. Ltd., Registered Office, Thamel, Kathmandu – 44600, Nepal.`,
   },
 ];
 

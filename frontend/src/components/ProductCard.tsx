@@ -4,6 +4,7 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import ProductDetailModal from "./ProductDetailModal";
+import { CURRENCY_SYMBOL } from "@/lib/constants";
 
 interface ProductCardProps {
   id: string | number;
@@ -129,75 +130,82 @@ const ProductCard = ({
             onClick={() => setDetailOpen(true)}
             className="w-full h-28 object-contain group-hover:scale-105 transition-transform cursor-pointer"
           />
-          {/* ADD / Qty controls */}
-          {stock === 0 ? (
-            <div className="absolute bottom-1 right-2 bg-muted text-muted-foreground text-xs font-semibold px-3 py-1.5 rounded-lg cursor-not-allowed">
-              Out of Stock
-            </div>
-          ) : qty === 0 ? (
-            <button
-              onClick={handleAdd}
-              disabled={loading}
-              className="absolute bottom-1 right-2 border border-primary text-primary hover:bg-primary hover:text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-lg transition-colors flex items-center gap-1 disabled:opacity-60"
-            >
-              ADD
-              <Plus className="w-3 h-3" />
-            </button>
-          ) : (
-            <div className="absolute bottom-1 right-2 flex items-center gap-1 bg-primary rounded-lg overflow-hidden">
-              <button
-                onClick={handleDecrease}
-                disabled={loading}
-                className="text-primary-foreground px-2 py-1.5 text-xs font-bold hover:bg-primary/80 transition-colors disabled:opacity-60"
-              >
-                <Minus className="w-3 h-3" />
-              </button>
-              <span className="text-primary-foreground text-xs font-bold px-1">
-                {qty}
-              </span>
-              <button
-                onClick={handleIncrease}
-                disabled={loading}
-                className="text-primary-foreground px-2 py-1.5 text-xs font-bold hover:bg-primary/80 transition-colors disabled:opacity-60"
-              >
-                <Plus className="w-3 h-3" />
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Details */}
-        <div className="p-3 pt-2 space-y-1">
-          {/* Price */}
-          <div className="flex items-center gap-2">
-            <span className="bg-zepto-green text-zepto-green-foreground text-xs font-bold px-1.5 py-0.5 rounded">
-              ₹{price}
-            </span>
-            <span className="text-xs text-muted-foreground line-through">
-              ₹{originalPrice}
-            </span>
-          </div>
-          <p className="text-xs font-semibold text-primary">{discount}</p>
-
-          {/* Name */}
-          <h3
-            onClick={() => setDetailOpen(true)}
-            className="text-sm font-medium text-foreground leading-tight line-clamp-2 cursor-pointer hover:text-primary transition-colors"
-          >
-            {name}
-          </h3>
-
-          {/* Weight */}
-          <p className="text-xs text-muted-foreground">{weight}</p>
-
-          {/* Rating */}
-          {rating && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Star className="w-3 h-3 fill-zepto-yellow text-zepto-yellow" />
-              <span>{rating}</span>
-              {ratingCount && <span>({ratingCount})</span>}
+        <div className="p-3 pt-2 flex items-start justify-between gap-2">
+          <div className="space-y-1 flex-1 min-w-0">
+            {/* Price */}
+            <div className="flex items-center gap-2">
+              <span className="bg-everest-success text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                {CURRENCY_SYMBOL}
+                {price}
+              </span>
+              <span className="text-xs text-muted-foreground line-through">
+                {CURRENCY_SYMBOL}
+                {originalPrice}
+              </span>
             </div>
-          )}
+            <p className="text-xs font-semibold text-primary">{discount}</p>
+
+            {/* Name */}
+            <h3
+              onClick={() => setDetailOpen(true)}
+              className="text-sm font-medium text-foreground leading-tight line-clamp-2 cursor-pointer hover:text-primary transition-colors"
+            >
+              {name}
+            </h3>
+
+            {/* Weight */}
+            <p className="text-xs text-muted-foreground">{weight}</p>
+
+            {/* Rating */}
+            {rating && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Star className="w-3 h-3 fill-everest-sun text-everest-sun" />
+                <span>{rating}</span>
+                {ratingCount && <span>({ratingCount})</span>}
+              </div>
+            )}
+          </div>
+
+          {/* ADD / Qty controls */}
+          <div className="flex-shrink-0 mt-5">
+            {stock === 0 ? (
+              <div className="bg-muted text-muted-foreground text-xs font-semibold px-2 py-1.5 rounded-lg cursor-not-allowed whitespace-nowrap">
+                Out of Stock
+              </div>
+            ) : qty === 0 ? (
+              <button
+                onClick={handleAdd}
+                disabled={loading}
+                className="border border-primary text-primary hover:bg-primary hover:text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 disabled:opacity-60"
+              >
+                ADD
+                <Plus className="w-3 h-3" />
+              </button>
+            ) : (
+              <div className="flex items-center gap-1 bg-primary rounded-lg overflow-hidden">
+                <button
+                  onClick={handleDecrease}
+                  disabled={loading}
+                  className="text-primary-foreground px-2 py-1.5 text-xs font-bold hover:bg-primary/80 transition-colors disabled:opacity-60"
+                >
+                  <Minus className="w-3 h-3" />
+                </button>
+                <span className="text-primary-foreground text-xs font-bold px-1">
+                  {qty}
+                </span>
+                <button
+                  onClick={handleIncrease}
+                  disabled={loading}
+                  className="text-primary-foreground px-2 py-1.5 text-xs font-bold hover:bg-primary/80 transition-colors disabled:opacity-60"
+                >
+                  <Plus className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

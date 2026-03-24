@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
 import { Package, X, ChevronRight, Truck, CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { getOrderStatus } from "@/lib/api";
 
 interface ActiveOrder {
@@ -13,6 +13,7 @@ interface ActiveOrder {
 interface OrderState {
   order: ActiveOrder;
   status: string;
+  riderName?: string;
 }
 
 const TERMINAL = new Set(["delivered", "cancelled"]);
@@ -37,7 +38,7 @@ const STATUS_ICON: Record<string, ReactNode> = {
   cancelled: <X className="w-4 h-4 text-red-400" />,
 };
 
-const STORAGE_KEY = "zepto_active_orders";
+const STORAGE_KEY = "everest_active_orders";
 
 function readOrders(): ActiveOrder[] {
   try {
@@ -84,7 +85,11 @@ export default function ActiveOrderBanner() {
               setOrderStates((prev) =>
                 prev.map((s) =>
                   s.order.orderId === order.orderId
-                    ? { ...s, status: data.order_status }
+                    ? {
+                        ...s,
+                        status: data.order_status,
+                        riderName: data.rider?.name ?? s.riderName,
+                      }
                     : s,
                 ),
               );
@@ -139,10 +144,10 @@ export default function ActiveOrderBanner() {
       });
     };
     window.addEventListener("storage", sync);
-    window.addEventListener("zepto_order_placed", sync);
+    window.addEventListener("everest_order_placed", sync);
     return () => {
       window.removeEventListener("storage", sync);
-      window.removeEventListener("zepto_order_placed", sync);
+      window.removeEventListener("everest_order_placed", sync);
     };
   }, []);
 
@@ -163,7 +168,7 @@ export default function ActiveOrderBanner() {
         )
       : orderStates[orderStates.length - 1];
 
-  const { order, status } = displayState;
+  const { order, status, riderName } = displayState;
   const pendingCount = activeOrders.length;
   const allTerminal = pendingCount === 0;
   const isDelivered = status === "delivered" && allTerminal;
@@ -213,70 +218,75 @@ export default function ActiveOrderBanner() {
   }
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-sm">
-      <div
-        className={`rounded-2xl shadow-2xl border px-4 py-3 flex items-center gap-3 backdrop-blur-sm transition-all duration-500 ${
-          isDelivered
-            ? "bg-green-900/90 border-green-700"
-            : isCancelled
-              ? "bg-red-900/90 border-red-700"
-              : "bg-gray-900/95 border-gray-700"
-        }`}
-      >
-        {/* Pulse dot — only while any orders are active */}
-        {pendingCount > 0 && (
-          <span className="relative flex-shrink-0">
-            <span className="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
-          </span>
-        )}
-
-        {/* Icon */}
-        <span className="flex-shrink-0 text-white">
-          {STATUS_ICON[status] ?? <Package className="w-4 h-4" />}
-        </span>
-
-        {/* Text */}
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-bold text-white truncate">
-            {pendingCount > 1
-              ? `${pendingCount} orders in progress`
-              : (STATUS_LABEL[status] ?? "Processing…")}
-          </p>
-          <p className="text-[11px] text-gray-300 truncate">
-            {isCancelled
-              ? order.orderId
-              : isDelivered
-                ? `${order.orderId} · Enjoy your order!`
-                : pendingCount > 1
-                  ? `Latest: ${order.orderId}`
-                  : isEnRoute
-                    ? `${order.orderId} · Almost there`
-                    : etaLeft > 0
-                      ? `${order.orderId} · ~${etaLeft} min left`
-                      : order.orderId}
-          </p>
-        </div>
-
-        {/* Track button */}
-        {!isCancelled && (
-          <button
-            onClick={() => navigate("/orders")}
-            className="flex-shrink-0 flex items-center gap-1 text-[11px] font-semibold text-primary hover:text-primary/80 transition-colors whitespace-nowrap"
-          >
-            Track
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        )}
-
-        {/* Dismiss */}
-        <button
-          onClick={() => setDismissed(true)}
-          className="flex-shrink-0 text-gray-500 hover:text-white transition-colors ml-1"
+    <>
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-sm">
+        <div
+          className={`rounded-2xl shadow-2xl border px-4 py-3 flex items-center gap-3 backdrop-blur-sm transition-all duration-500 ${
+            isDelivered
+              ? "bg-green-900/90 border-green-700"
+              : isCancelled
+                ? "bg-red-900/90 border-red-700"
+                : "bg-gray-900/95 border-gray-700"
+          }`}
         >
-          <X className="w-3.5 h-3.5" />
-        </button>
+          {/* Pulse dot — only while any orders are active */}
+          {pendingCount > 0 && (
+            <span className="relative flex-shrink-0">
+              <span className="animate-ping absolute inline-flex h-2.5 w-2.5 rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
+            </span>
+          )}
+
+          {/* Icon */}
+          <span className="flex-shrink-0 text-white">
+            {STATUS_ICON[status] ?? <Package className="w-4 h-4" />}
+          </span>
+
+          {/* Text */}
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-bold text-white truncate">
+              {pendingCount > 1
+                ? `${pendingCount} orders in progress`
+                : (STATUS_LABEL[status] ?? "Processing…")}
+            </p>
+            <p className="text-[11px] text-gray-300 truncate">
+              {isCancelled
+                ? order.orderId
+                : isDelivered
+                  ? `${order.orderId} · Enjoy your order!`
+                  : pendingCount > 1
+                    ? `Latest: ${order.orderId}`
+                    : riderName &&
+                        (status === "assigned" || status === "en_route")
+                      ? `${riderName} is on the way`
+                      : isEnRoute
+                        ? `${order.orderId} · Almost there`
+                        : etaLeft > 0
+                          ? `${order.orderId} · ~${etaLeft} min left`
+                          : order.orderId}
+            </p>
+          </div>
+
+          {/* Track button */}
+          {!isCancelled && (
+            <button
+              onClick={() => navigate(`/track/${order.orderId}`)}
+              className="flex-shrink-0 flex items-center gap-1 text-[11px] font-semibold text-primary hover:text-primary/80 transition-colors whitespace-nowrap"
+            >
+              Track
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          )}
+
+          {/* Dismiss */}
+          <button
+            onClick={() => setDismissed(true)}
+            className="flex-shrink-0 text-gray-500 hover:text-white transition-colors ml-1"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

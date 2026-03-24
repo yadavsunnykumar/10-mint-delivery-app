@@ -75,7 +75,7 @@ export const verifyOtp = async (req, res) => {
     }
 
     if (!user.name) {
-      user.name = "Zepto User";
+      return res.status(400).json({ error: "Name is required for new users" });
     }
 
     user.otp = null;
@@ -91,6 +91,8 @@ export const verifyOtp = async (req, res) => {
         user_id: user._id.toString(),
         name: user.name,
         phone: user.phone,
+        alt_phone: user.alt_phone ?? null,
+        avatar: user.avatar ?? null,
         warehouse_id: user.warehouse_id,
         location: user.location,
       },
@@ -114,6 +116,8 @@ export const getProfile = async (req, res) => {
         user_id: user._id.toString(),
         name: user.name,
         phone: user.phone,
+        alt_phone: user.alt_phone ?? null,
+        avatar: user.avatar ?? null,
         warehouse_id: user.warehouse_id,
         location: user.location,
       },
@@ -121,5 +125,37 @@ export const getProfile = async (req, res) => {
   } catch (error) {
     console.error("Get profile error:", error);
     return res.status(500).json({ error: "Failed to fetch profile" });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, alt_phone, avatar } = req.body;
+    const user = await User.findById(req.user.user_id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (name !== undefined) {
+      if (!name.trim())
+        return res.status(400).json({ error: "Name cannot be empty" });
+      user.name = name.trim();
+    }
+    if (alt_phone !== undefined) user.alt_phone = alt_phone || null;
+    if (avatar !== undefined) user.avatar = avatar || null;
+
+    await user.save();
+
+    return res.json({
+      success: true,
+      user: {
+        user_id: user._id.toString(),
+        name: user.name,
+        phone: user.phone,
+        alt_phone: user.alt_phone ?? null,
+        avatar: user.avatar ?? null,
+      },
+    });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    return res.status(500).json({ error: "Failed to update profile" });
   }
 };

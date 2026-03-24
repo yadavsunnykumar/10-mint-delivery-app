@@ -27,7 +27,9 @@ const About = () => {
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Zap className="h-10 w-10 text-primary fill-primary" />
-            <h1 className="text-4xl font-extrabold text-foreground">Zepto</h1>
+            <h1 className="text-4xl font-extrabold text-foreground">
+              Everest Dash
+            </h1>
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Delivering groceries to your doorstep in minutes — not hours.
@@ -40,9 +42,9 @@ const About = () => {
             Our Mission
           </h2>
           <p className="text-muted-foreground leading-relaxed">
-            At Zepto, we believe that getting the essentials you need should
-            never take longer than a quick phone call. We're on a mission to
-            make instant commerce a reality for every household — from fresh
+            At Everest Dash, we believe that getting the essentials you need
+            should never take longer than a quick phone call. We're on a mission
+            to make instant commerce a reality for every household — from fresh
             vegetables to midnight snack cravings.
           </p>
         </section>
@@ -104,14 +106,11 @@ const About = () => {
         <section className="bg-card rounded-2xl border border-border p-8">
           <h2 className="text-2xl font-bold text-foreground mb-3">Our story</h2>
           <p className="text-muted-foreground leading-relaxed mb-3">
-            Zepto was founded in 2021 by two 19-year-olds who were frustrated
-            waiting 2–3 days for grocery deliveries. They asked a simple
-            question: <em>what if groceries arrived in 10 minutes?</em>
-          </p>
-          <p className="text-muted-foreground leading-relaxed">
-            Starting with a single dark store in Mumbai, Zepto has grown to
-            become India's fastest growing quick-commerce platform, operating
-            across 25+ cities with a passionate team of over 10,000 people.
+            Everest Dash was founded with a vision to bring the world's fastest
+            grocery delivery to every household. Starting small and growing
+            fast, Everest Dash has become a leading quick-commerce platform,
+            operating across 25+ cities with a passionate team of over 10,000
+            people.
           </p>
         </section>
       </div>

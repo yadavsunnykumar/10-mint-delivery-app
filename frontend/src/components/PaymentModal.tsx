@@ -13,6 +13,8 @@ import {
   MapPin,
 } from "lucide-react";
 
+import { CURRENCY_SYMBOL } from "@/lib/constants";
+
 type PaymentMethod = "upi" | "card" | "cod";
 type Step = "method" | "details" | "processing" | "success";
 
@@ -86,15 +88,15 @@ const PaymentModal = ({
       setOrderResult(result);
       // Append to the active-orders list so the banner tracks multiple orders
       try {
-        const raw = localStorage.getItem("zepto_active_orders");
+        const raw = localStorage.getItem("everest_active_orders");
         const existing = raw ? JSON.parse(raw) : [];
         existing.push({
           orderId: result.orderId,
           eta: result.eta,
           placedAt: Date.now(),
         });
-        localStorage.setItem("zepto_active_orders", JSON.stringify(existing));
-        window.dispatchEvent(new Event("zepto_order_placed"));
+        localStorage.setItem("everest_active_orders", JSON.stringify(existing));
+        window.dispatchEvent(new Event("everest_order_placed"));
       } catch {
         /* ignore */
       }
@@ -147,10 +149,13 @@ const PaymentModal = ({
           <div className="bg-secondary/60 px-5 py-3 flex items-center justify-between text-sm border-b border-border">
             <span className="text-muted-foreground">
               {itemCount} item{itemCount !== 1 ? "s" : ""} ·{" "}
-              {deliveryFee === 0 ? "Free delivery" : `₹${deliveryFee} delivery`}
+              {deliveryFee === 0
+                ? "Free delivery"
+                : `${CURRENCY_SYMBOL}${deliveryFee} delivery`}
             </span>
             <span className="font-bold text-foreground text-base">
-              ₹{grandTotal}
+              {CURRENCY_SYMBOL}
+              {grandTotal}
             </span>
           </div>
         )}
@@ -207,14 +212,14 @@ const PaymentModal = ({
                     }`}
                   >
                     {m === "upi"
-                      ? "UPI / GPay / PhonePe"
+                      ? "eSewa / Khalti / FonePay"
                       : m === "card"
                         ? "Credit / Debit Card"
                         : "Cash on Delivery"}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {m === "upi"
-                      ? "Pay instantly via UPI"
+                      ? "Pay instantly via eSewa / Khalti"
                       : m === "card"
                         ? "Visa, Mastercard accepted"
                         : "Pay when you receive"}
@@ -255,24 +260,26 @@ const PaymentModal = ({
                   </label>
                   <input
                     type="text"
-                    placeholder="username@paytm"
+                    placeholder="username@fonepay"
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
                     className="w-full bg-secondary text-foreground border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {["@paytm", "@gpay", "@ybl", "@oksbi"].map((suffix) => (
-                    <button
-                      key={suffix}
-                      onClick={() =>
-                        setUpiId((prev) => prev.split("@")[0] + suffix)
-                      }
-                      className="text-xs border border-border text-muted-foreground px-2.5 py-1 rounded-full hover:border-primary hover:text-primary transition-colors"
-                    >
-                      {suffix}
-                    </button>
-                  ))}
+                  {["@fonepay", "@esewa", "@khalti", "@imepay"].map(
+                    (suffix) => (
+                      <button
+                        key={suffix}
+                        onClick={() =>
+                          setUpiId((prev) => prev.split("@")[0] + suffix)
+                        }
+                        className="text-xs border border-border text-muted-foreground px-2.5 py-1 rounded-full hover:border-primary hover:text-primary transition-colors"
+                      >
+                        {suffix}
+                      </button>
+                    ),
+                  )}
                 </div>
               </>
             )}
@@ -354,7 +361,8 @@ const PaymentModal = ({
               disabled={!canProceedDetails()}
               className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:opacity-90 disabled:opacity-60 text-sm"
             >
-              Pay ₹{grandTotal}
+              Pay {CURRENCY_SYMBOL}
+              {grandTotal}
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

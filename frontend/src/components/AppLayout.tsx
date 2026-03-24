@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import DeliveryBanner from "@/components/DeliveryBanner";
-import ZeptoHeader from "@/components/ZeptoHeader";
+import EverestHeader from "@/components/EverestHeader";
 import CategoryTabs from "@/components/CategoryTabs";
 import LocationModal from "@/components/LocationModal";
 import ActiveOrderBanner from "@/components/ActiveOrderBanner";
@@ -24,7 +24,7 @@ const AppLayout = () => {
     <div className="min-h-screen bg-background">
       <DeliveryBanner />
       <div className="sticky top-0 z-40 bg-card shadow-sm">
-        <ZeptoHeader
+        <EverestHeader
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
         />

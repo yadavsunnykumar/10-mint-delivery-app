@@ -25,7 +25,7 @@ const sections = [
   },
   {
     title: "6. Your Rights",
-    body: `Under applicable data protection laws, you have the right to: access the personal data we hold about you, correct inaccurate data, request deletion of your data, object to or restrict processing, and request data portability. To exercise these rights, contact us at privacy@zepto.com.`,
+    body: `Under applicable data protection laws, you have the right to: access the personal data we hold about you, correct inaccurate data, request deletion of your data, object to or restrict processing, and request data portability. To exercise these rights, contact us at privacy@everestdash.com.`,
   },
   {
     title: "7. Data Security",
@@ -41,7 +41,7 @@ const sections = [
   },
   {
     title: "10. Contact",
-    body: `For privacy-related queries or to exercise your rights, contact our Data Protection Officer at privacy@zepto.com or write to: Zepto Technologies Pvt. Ltd., Lower Parel, Mumbai – 400013, India.`,
+    body: `For privacy-related queries or to exercise your rights, contact our Data Protection Officer at privacy@everestdash.com or write to: Everest Dash Technologies Pvt. Ltd., Lower Parel, Mumbai – 400013, India.`,
   },
 ];
 

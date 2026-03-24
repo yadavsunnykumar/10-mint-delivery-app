@@ -22,9 +22,12 @@ import {
   clearCartApi,
 } from "@/lib/api";
 import PaymentModal from "@/components/PaymentModal";
-
-const DELIVERY_FEE = 25;
-const DELIVERY_FREE_ABOVE = 299;
+import {
+  DELIVERY_FEE,
+  DELIVERY_FREE_ABOVE,
+  CURRENCY_SYMBOL,
+  DEFAULT_LOCATION,
+} from "@/lib/constants";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -70,8 +73,8 @@ const Cart = () => {
       price: item.product?.price ?? 0,
     }));
 
-    const userLat = userCoords?.lat ?? 12.9716;
-    const userLng = userCoords?.lng ?? 77.5946;
+    const userLat = userCoords?.lat ?? DEFAULT_LOCATION.lat;
+    const userLng = userCoords?.lng ?? DEFAULT_LOCATION.lng;
 
     const result = await placeOrder({
       warehouse_id: warehouseId,
@@ -193,7 +196,8 @@ const Cart = () => {
                 <span className="text-foreground">
                   Add items worth{" "}
                   <span className="font-bold text-primary">
-                    ₹{amountNeededForFreeDelivery}
+                    {CURRENCY_SYMBOL}
+                    {amountNeededForFreeDelivery}
                   </span>{" "}
                   more for <span className="font-bold">FREE delivery</span>
                 </span>
@@ -217,10 +221,10 @@ const Cart = () => {
                 return (
                   <div
                     key={item.product_id}
-                    className="bg-card border border-border rounded-xl p-4 flex items-center gap-4"
+                    className="bg-card border border-border rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4"
                   >
                     {/* Image */}
-                    <div className="w-16 h-16 flex-shrink-0 bg-secondary rounded-lg overflow-hidden">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 bg-secondary rounded-lg overflow-hidden">
                       {product?.image ? (
                         <img
                           src={product.image}
@@ -246,29 +250,31 @@ const Cart = () => {
                       )}
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-sm font-bold text-foreground">
-                          ₹{product ? product.price * item.qty : "—"}
+                          {CURRENCY_SYMBOL}
+                          {product ? product.price * item.qty : "\u2014"}
                         </span>
                         {product && (
                           <span className="text-xs text-muted-foreground line-through">
-                            ₹{product.originalPrice * item.qty}
+                            {CURRENCY_SYMBOL}
+                            {product.originalPrice * item.qty}
                           </span>
                         )}
                       </div>
                     </div>
 
                     {/* Qty stepper */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                       <div className="flex items-center gap-0.5 bg-primary rounded-lg overflow-hidden">
                         <button
                           onClick={() =>
                             handleDecrease(item.product_id, item.qty)
                           }
                           disabled={isLoading}
-                          className="text-primary-foreground px-2.5 py-2 text-xs font-bold hover:bg-primary/80 transition-colors disabled:opacity-60"
+                          className="text-primary-foreground px-2 py-1.5 sm:px-2.5 sm:py-2 text-xs font-bold hover:bg-primary/80 transition-colors disabled:opacity-60"
                         >
-                          <Minus className="w-3.5 h-3.5" />
+                          <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                         </button>
-                        <span className="text-primary-foreground text-sm font-bold px-1.5 min-w-[24px] text-center">
+                        <span className="text-primary-foreground text-xs sm:text-sm font-bold px-1 min-w-[20px] sm:min-w-[24px] text-center">
                           {item.qty}
                         </span>
                         <button
@@ -276,9 +282,9 @@ const Cart = () => {
                             handleIncrease(item.product_id, item.qty)
                           }
                           disabled={isLoading}
-                          className="text-primary-foreground px-2.5 py-2 text-xs font-bold hover:bg-primary/80 transition-colors disabled:opacity-60"
+                          className="text-primary-foreground px-2 py-1.5 sm:px-2.5 sm:py-2 text-xs font-bold hover:bg-primary/80 transition-colors disabled:opacity-60"
                         >
-                          <Plus className="w-3.5 h-3.5" />
+                          <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                         </button>
                       </div>
 
@@ -289,7 +295,7 @@ const Cart = () => {
                         className="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-40 p-1"
                         title="Remove item"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                     </div>
                   </div>
@@ -300,7 +306,7 @@ const Cart = () => {
 
           {/* Right – order summary */}
           <div className="lg:col-span-1">
-            <div className="bg-card border border-border rounded-xl p-5 sticky top-20 space-y-4">
+            <div className="bg-card border border-border rounded-xl p-4 sm:p-5 lg:sticky lg:top-20 space-y-4">
               {/* ETA & location strip */}
               <div className="rounded-xl border border-border bg-secondary/50 p-3 space-y-2">
                 {deliveryLocation ? (
@@ -376,7 +382,8 @@ const Cart = () => {
                 <div className="flex justify-between text-muted-foreground">
                   <span>Subtotal ({cartCount} items)</span>
                   <span className="font-medium text-foreground">
-                    ₹{cartTotal}
+                    {CURRENCY_SYMBOL}
+                    {cartTotal}
                   </span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
@@ -387,7 +394,8 @@ const Cart = () => {
                     </span>
                   ) : (
                     <span className="font-medium text-foreground">
-                      ₹{deliveryFee}
+                      {CURRENCY_SYMBOL}
+                      {deliveryFee}
                     </span>
                   )}
                 </div>
@@ -396,7 +404,8 @@ const Cart = () => {
               <div className="border-t border-border pt-3 flex justify-between">
                 <span className="font-bold text-foreground">Total</span>
                 <span className="font-bold text-lg text-foreground">
-                  ₹{grandTotal}
+                  {CURRENCY_SYMBOL}
+                  {grandTotal}
                 </span>
               </div>
 

@@ -1,4 +1,5 @@
 import DeliveryPartner from "../models/deliveryPartner.model.js";
+import { haversineKm } from "./distance.js";
 
 export const findNearestRider = async (warehouseLocation) => {
   const riders = await DeliveryPartner.find({ is_available: true });
@@ -9,9 +10,11 @@ export const findNearestRider = async (warehouseLocation) => {
   let shortestDistance = Infinity;
 
   riders.forEach((rider) => {
-    const d = Math.sqrt(
-      Math.pow(rider.current_location.lat - warehouseLocation.lat, 2) +
-      Math.pow(rider.current_location.lng - warehouseLocation.lng, 2),
+    const d = haversineKm(
+      rider.current_location.lat,
+      rider.current_location.lng,
+      warehouseLocation.lat,
+      warehouseLocation.lng,
     );
 
     if (d < shortestDistance) {

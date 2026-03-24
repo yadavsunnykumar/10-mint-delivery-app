@@ -60,25 +60,25 @@ const ContactUs = () => {
                 icon: <MessageCircle className="h-5 w-5 text-primary" />,
                 title: "In-app chat",
                 desc: "Fastest response — usually under 2 minutes.",
-                sub: "Available in the Zepto app",
+                sub: "Available in the Everest Dash app",
               },
               {
                 icon: <Phone className="h-5 w-5 text-primary" />,
                 title: "Helpline",
                 desc: "1800-XXX-XXXX (toll free)",
-                sub: "Mon – Sun, 7 am – 11 pm IST",
+                sub: "Mon – Sun, 7 am – 11 pm NPT",
               },
               {
                 icon: <Mail className="h-5 w-5 text-primary" />,
                 title: "Email",
-                desc: "support@zepto.com",
+                desc: "support@everestdash.com",
                 sub: "We reply within 24 hours",
               },
               {
                 icon: <Clock className="h-5 w-5 text-primary" />,
                 title: "Office hours",
-                desc: "Mon – Sat, 10 am – 6 pm IST",
-                sub: "Registered office: Mumbai, India",
+                desc: "Mon – Sat, 10 am – 6 pm NPT",
+                sub: "Registered office: Kathmandu, Nepal",
               },
             ].map(({ icon, title, desc, sub }) => (
               <div

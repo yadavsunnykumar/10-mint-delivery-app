@@ -28,5 +28,5 @@ app.use("/cart", cartRoutes);
 app.use("/warehouses", warehouseRoutes);
 app.use("/admin", adminRoutes);
 
-app.get("/", (req, res) => res.send("Zepto API running"));
+app.get("/", (req, res) => res.send("Everest Dash API running"));
 export default app;

@@ -31,8 +31,8 @@ const CategoryGrid = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      <div className="grid grid-cols-5 sm:grid-cols-10 gap-4">
+    <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6">
+      <div className="grid grid-cols-5 sm:grid-cols-10 gap-2 sm:gap-4">
         {GRID_CATEGORIES.map((cat) => {
           const meta = GRID_META[cat.slug];
           if (!meta) return null;
@@ -44,14 +44,14 @@ const CategoryGrid = () => {
                 e.currentTarget.blur();
                 navigate(`/shop/${cat.slug}`);
               }}
-              className="flex flex-col items-center gap-2 group cursor-pointer"
+              className="flex flex-col items-center gap-1.5 group cursor-pointer"
             >
               <div
-                className={`w-16 h-16 rounded-2xl ${meta.color} flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm`}
+                className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl ${meta.color} flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm`}
               >
-                <Icon className="w-7 h-7" />
+                <Icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
               </div>
-              <span className="text-xs font-medium text-foreground text-center leading-tight">
+              <span className="text-[10px] sm:text-xs font-medium text-foreground text-center leading-tight">
                 {cat.name}
               </span>
             </button>

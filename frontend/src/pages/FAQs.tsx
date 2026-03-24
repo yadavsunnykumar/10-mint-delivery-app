@@ -8,24 +8,24 @@ const faqs = [
     section: "Orders & Delivery",
     items: [
       {
-        q: "How fast is Zepto's delivery?",
+        q: "How fast is Everest Dash's delivery?",
         a: "We promise delivery in 10 minutes or less. Our network of dark stores is strategically placed so that there's always a store near you.",
       },
       {
-        q: "What is Zepto's delivery area?",
-        a: "We currently operate in 25+ cities across India, including Mumbai, Bangalore, Delhi NCR, Hyderabad, Pune, Chennai, Kolkata and more. Enter your pin code on the app to check availability.",
+        q: "What is Everest Dash's delivery area?",
+        a: "We currently operate across the Kathmandu Valley, including Kathmandu, Lalitpur, and Bhaktapur. Enter your area on the app to check availability.",
       },
       {
         q: "Is there a minimum order amount?",
-        a: "There is no minimum order requirement. However, a small delivery fee may apply for orders below ₹99.",
+        a: "There is no minimum order requirement. However, a small delivery fee may apply for orders below रू 99.",
       },
       {
         q: "Can I schedule a delivery for later?",
-        a: "Currently, Zepto focuses on instant delivery. Scheduled delivery is on our roadmap and will be available soon.",
+        a: "Currently, Everest Dash focuses on instant delivery. Scheduled delivery is on our roadmap and will be available soon.",
       },
       {
         q: "What if my order is delayed?",
-        a: "If your order exceeds our promised delivery window, you will automatically receive Zepto Credits as compensation. You can use these on your next order.",
+        a: "If your order exceeds our promised delivery window, you will automatically receive Everest Dash Credits as compensation. You can use these on your next order.",
       },
     ],
   },
@@ -34,11 +34,11 @@ const faqs = [
     items: [
       {
         q: "What payment methods are accepted?",
-        a: "We accept UPI (Google Pay, PhonePe, Paytm), credit/debit cards, net banking, and cash on delivery in select cities.",
+        a: "We accept eSewa, Khalti, FonePay, IME Pay, credit/debit cards, and cash on delivery.",
       },
       {
         q: "How do I get a refund for a damaged or missing item?",
-        a: "Report the issue within 48 hours of delivery via the app's 'Help' section. Refunds are processed to the original payment method within 3–5 business days, or instantly to your Zepto Wallet.",
+        a: "Report the issue within 48 hours of delivery via the app's 'Help' section. Refunds are processed to the original payment method within 3–5 business days, or instantly to your Everest Dash Wallet.",
       },
       {
         q: "Are my payment details safe?",
@@ -58,7 +58,7 @@ const faqs = [
         a: "Absolutely. All fresh produce goes through daily quality checks and our cold-chain logistics ensure everything reaches you in top condition.",
       },
       {
-        q: "How many products does Zepto carry?",
+        q: "How many products does Everest Dash carry?",
         a: "We stock over 5,000 products across 15 categories at each dark store, including national brands and local favourites.",
       },
     ],
@@ -68,7 +68,7 @@ const faqs = [
     items: [
       {
         q: "How do I contact customer support?",
-        a: "You can reach us via the in-app chat (fastest), email at support@zepto.com, or call our helpline at 1800-XXX-XXXX (Mon–Sun, 7 am–11 pm).",
+        a: "You can reach us via the in-app chat (fastest), email at support@everestdash.com, or call our helpline at 1800-XXX-XXXX (Mon–Sun, 7 am–11 pm).",
       },
       {
         q: "How do I apply a promo code?",

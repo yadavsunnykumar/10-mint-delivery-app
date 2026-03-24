@@ -25,6 +25,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import OrderHistory from "./pages/OrderHistory.tsx";
 import SearchResults from "./pages/SearchResults.tsx";
 import AdminPanel from "./pages/AdminPanel.tsx";
+import TrackOrderPage from "./pages/TrackOrderPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,8 @@ const App = () => (
                   {/* All pages share the AppLayout shell (header + category tabs) */}
                   {/* Standalone admin — no user layout */}
                   <Route path="/admin" element={<AdminPanel />} />
+                  {/* Standalone order tracking page */}
+                  <Route path="/track/:orderId" element={<TrackOrderPage />} />
 
                   {/* All pages share the AppLayout shell (header + category tabs) */}
                   <Route element={<AppLayout />}>

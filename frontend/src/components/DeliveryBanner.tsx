@@ -3,9 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "@/context/LocationContext";
 import { useCart } from "@/context/CartContext";
 import { estimateEta } from "@/lib/api";
-
-const DELIVERY_FEE = 25;
-const DELIVERY_FREE_ABOVE = 299;
+import {
+  DELIVERY_FEE,
+  DELIVERY_FREE_ABOVE,
+  CURRENCY_SYMBOL,
+} from "@/lib/constants";
 
 const DeliveryBanner = () => {
   const { location: deliveryLocation } = useLocation();
@@ -26,7 +28,9 @@ const DeliveryBanner = () => {
 
   const deliveryFee = cartTotal >= DELIVERY_FREE_ABOVE ? 0 : DELIVERY_FEE;
   const feeLabel =
-    deliveryFee === 0 ? "Free Delivery" : `₹${deliveryFee} Delivery Fee`;
+    deliveryFee === 0
+      ? "Free Delivery"
+      : `${CURRENCY_SYMBOL}${deliveryFee} Delivery Fee`;
 
   return (
     <div className="bg-primary">

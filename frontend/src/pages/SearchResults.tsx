@@ -5,6 +5,7 @@ import { Search, SlidersHorizontal, X, ArrowLeft } from "lucide-react";
 import { aiSearch, fetchProducts } from "@/lib/api";
 import type { Product } from "@/lib/api";
 import ProductCard from "@/components/ProductCard";
+import { CURRENCY_SYMBOL } from "@/lib/constants";
 
 const CATEGORIES = [
   "All",
@@ -68,7 +69,8 @@ function FilterPanel({
 
       <div>
         <h3 className="text-sm font-bold text-foreground mb-2">
-          Max Price: ₹{maxPrice}
+          Max Price: {CURRENCY_SYMBOL}
+          {maxPrice}
         </h3>
         <input
           type="range"
@@ -80,8 +82,8 @@ function FilterPanel({
           className="w-full accent-primary"
         />
         <div className="flex justify-between text-xs text-muted-foreground mt-1">
-          <span>₹50</span>
-          <span>₹1000</span>
+          <span>{CURRENCY_SYMBOL}50</span>
+          <span>{CURRENCY_SYMBOL}1000</span>
         </div>
       </div>
 

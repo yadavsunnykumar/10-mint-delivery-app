@@ -1,14 +1,14 @@
 [
   {
     "_id": "w1",
-    "name": "Dark Store Indiranagar",
-    "location": { "lat": 12.9716, "lng": 77.6412 },
+    "name": "Dark Store Thamel",
+    "location": { "lat": 27.7149, "lng": 85.313 },
     "active_riders": 8
   },
   {
     "_id": "w2",
-    "name": "Dark Store Andheri",
-    "location": { "lat": 19.1197, "lng": 72.8468 },
+    "name": "Dark Store Patan",
+    "location": { "lat": 27.6826, "lng": 85.321 },
     "active_riders": 5
   }
 ]

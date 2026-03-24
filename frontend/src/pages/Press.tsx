@@ -5,7 +5,7 @@ import { ArrowLeft, Download, ExternalLink, Newspaper } from "lucide-react";
 const mentions = [
   {
     outlet: "TechCrunch",
-    headline: "Zepto hits $1B valuation in record 18 months",
+    headline: "Everest Dash hits $1B valuation in record 18 months",
     date: "November 2025",
     logo: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=80",
   },
@@ -17,25 +17,25 @@ const mentions = [
   },
   {
     outlet: "Economic Times",
-    headline: "Zepto expands dark-store network to Tier-2 cities",
+    headline: "Everest Dash expands dark-store network to Tier-2 cities",
     date: "September 2025",
     logo: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=80",
   },
   {
     outlet: "YourStory",
-    headline: "Inside Zepto's AI-first approach to supply chain",
+    headline: "Inside Everest Dash's AI-first approach to supply chain",
     date: "August 2025",
     logo: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=80",
   },
   {
     outlet: "NDTV Profit",
-    headline: "Zepto partners with 500+ local farmers for fresh produce",
+    headline: "Everest Dash partners with 500+ local farmers for fresh produce",
     date: "July 2025",
     logo: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=80",
   },
   {
     outlet: "Inc42",
-    headline: "How Zepto is winning the quick-commerce war",
+    headline: "How Everest Dash is winning the quick-commerce war",
     date: "June 2025",
     logo: "https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=80",
   },
@@ -83,10 +83,10 @@ const Press = () => {
               Our communications team is available Monday–Friday, 9 am–6 pm IST.
             </p>
             <a
-              href="mailto:press@zepto.com"
+              href="mailto:press@everestdash.com"
               className="text-primary font-medium text-sm mt-1 inline-block hover:underline"
             >
-              press@zepto.com
+              press@everestdash.com
             </a>
           </div>
           <Button className="shrink-0">Contact press team</Button>

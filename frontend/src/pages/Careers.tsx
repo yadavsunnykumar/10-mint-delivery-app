@@ -77,7 +77,7 @@ const perks = [
   {
     emoji: "📚",
     title: "Learning budget",
-    desc: "₹50,000/year to spend on courses, books and conferences.",
+    desc: "रू 50,000/year to spend on courses, books and conferences.",
   },
   {
     emoji: "🎉",
@@ -104,7 +104,7 @@ const Careers = () => {
         {/* Hero */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-extrabold text-foreground mb-3">
-            Join the Zepto team
+            Join the Everest Dash team
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Help us build the future of instant commerce. We're a team of
@@ -116,7 +116,7 @@ const Careers = () => {
         {/* Perks */}
         <section className="mb-10">
           <h2 className="text-2xl font-bold text-foreground mb-6">
-            Why Zepto?
+            Why Everest Dash?
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {perks.map(({ emoji, title, desc }) => (

@@ -29,14 +29,14 @@ export interface CartResponse {
 }
 
 function authHeaders(): HeadersInit {
-  const token = localStorage.getItem("zepto_token");
+  const token = localStorage.getItem("everest_token");
   return token
     ? { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
     : { "Content-Type": "application/json" };
 }
 
 function adminHeaders(): HeadersInit {
-  const adminKey = sessionStorage.getItem("zepto_admin") ?? "";
+  const adminKey = sessionStorage.getItem("everest_admin") ?? "";
   return { ...authHeaders(), "X-Admin-Key": adminKey };
 }
 
@@ -92,6 +92,29 @@ export async function verifyOtp(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone, otp, name }),
+    }),
+  );
+}
+
+export async function updateProfile(data: {
+  name?: string;
+  alt_phone?: string | null;
+  avatar?: string | null;
+}): Promise<{
+  success: boolean;
+  user: {
+    user_id: string;
+    name: string;
+    phone: string;
+    alt_phone?: string | null;
+    avatar?: string | null;
+  };
+}> {
+  return json(
+    await fetch(`${BASE}/auth/profile`, {
+      method: "PATCH",
+      headers: authHeaders(),
+      body: JSON.stringify(data),
     }),
   );
 }
@@ -266,16 +289,71 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
   return data.orders;
 }
 
-export async function getOrderStatus(
-  orderId: string,
-): Promise<{ order_id: string; order_status: string; eta_minutes: number }> {
+export async function getOrderStatus(orderId: string): Promise<{
+  order_id: string;
+  order_status: string;
+  eta_minutes: number;
+  rider?: {
+    name: string;
+    phone?: string;
+    vehicle_number?: string;
+    rider_id?: string;
+    current_location?: { lat: number; lng: number };
+  } | null;
+}> {
   const data = await json<{
     success: boolean;
     order_id: string;
     order_status: string;
     eta_minutes: number;
+    rider?: {
+      name: string;
+      phone?: string;
+      vehicle_number?: string;
+      rider_id?: string;
+      current_location?: { lat: number; lng: number };
+    } | null;
   }>(
     await fetch(`${BASE}/orders/status/${encodeURIComponent(orderId)}`, {
+      headers: authHeaders(),
+    }),
+  );
+  return data;
+}
+
+export interface OrderTracking {
+  order_id: string;
+  order_status: string;
+  eta_minutes: number;
+  total_amount?: number;
+  payment_status?: string;
+  created_at?: string;
+  warehouse_id?: string;
+  warehouse_name?: string;
+  items?: Array<{
+    product_id: string;
+    qty: number;
+    name?: string;
+    image?: string;
+    price?: number | null;
+    weight?: string;
+  }>;
+  user_location: { lat: number; lng: number };
+  warehouse_location?: { lat: number; lng: number } | null;
+  rider?: {
+    name: string;
+    phone?: string;
+    vehicle_number?: string;
+    rider_id?: string;
+    current_location?: { lat: number; lng: number };
+  } | null;
+}
+
+export async function getOrderTracking(
+  orderId: string,
+): Promise<OrderTracking> {
+  const data = await json<{ success: boolean } & OrderTracking>(
+    await fetch(`${BASE}/orders/tracking/${encodeURIComponent(orderId)}`, {
       headers: authHeaders(),
     }),
   );

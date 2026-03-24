@@ -1,16 +1,16 @@
 [
   {
     "_id": "r1",
-    "name": "Ravi Kumar",
+    "name": "Bikash Tamang",
     "vehicle": "Bike",
-    "current_location": { "lat": 12.9721, "lng": 77.6405 },
+    "current_location": { "lat": 27.7149, "lng": 85.313 },
     "availability": true
   },
   {
     "_id": "r2",
-    "name": "Suresh Patil",
+    "name": "Sushil Shrestha",
     "vehicle": "Scooter",
-    "current_location": { "lat": 19.1205, "lng": 72.8459 },
+    "current_location": { "lat": 27.6826, "lng": 85.321 },
     "availability": true
   }
 ]

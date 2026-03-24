@@ -7,25 +7,7 @@ import ProductSection from "@/components/ProductSection";
 import { fetchProducts, aiSearch, getRecommendations } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import type { LayoutContext } from "@/components/AppLayout";
-
-// Real categories that exist in the seeded products.json
-const SECTION_CATEGORIES = [
-  { title: "Snacks & Munchies", key: "Snacks & Munchies" },
-  { title: "Dairy, Bread & Eggs", key: "Dairy, Bread & Eggs" },
-  { title: "Beverages", key: "Beverages" },
-  { title: "Instant Food", key: "Instant Food" },
-  { title: "Fruits & Vegetables", key: "Fruits & Vegetables" },
-  { title: "Atta, Rice & Dals", key: "Atta, Rice & Dals" },
-  { title: "Masala & Dry Fruits", key: "Masala & Dry Fruits" },
-  { title: "Breakfast & Sauces", key: "Breakfast & Sauces" },
-  { title: "Ice Creams", key: "Ice Creams" },
-  { title: "Frozen Food", key: "Frozen Food" },
-  { title: "Home & Cleaning", key: "Home & Cleaning" },
-  { title: "Beauty & Personal Care", key: "Beauty & Personal Care" },
-  { title: "Electronics", key: "Electronics" },
-  { title: "Toys & Games", key: "Toys & Games" },
-  { title: "Fashion", key: "Fashion" },
-];
+import { SECTION_CATEGORIES } from "@/lib/constants";
 
 const Index = () => {
   const { searchQuery } = useOutletContext<LayoutContext>();
@@ -113,13 +95,13 @@ const Index = () => {
             )}
 
           {/* ── Category sections ─────────────────────────── */}
-          {SECTION_CATEGORIES.map(({ title, key }, i) => {
+          {SECTION_CATEGORIES.map(({ title, key, slug }, i) => {
             const products = grouped?.[key] ?? [];
             if (products.length === 0) return null;
             return (
               <div key={key}>
                 {i > 0 && <div className="border-t border-border" />}
-                <ProductSection title={title} products={products} />
+                <ProductSection title={title} products={products} slug={slug} />
               </div>
             );
           })}

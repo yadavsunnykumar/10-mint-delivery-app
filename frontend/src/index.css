@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,44 +6,41 @@
 
 @layer base {
   :root {
-    --background: 0 0% 97%;
-    --foreground: 0 0% 13%;
+    --background: 210 40% 98%;
+    --foreground: 225 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 13%;
+    --card-foreground: 225 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 13%;
+    --popover-foreground: 225 47% 11%;
 
-    --primary: 280 70% 50%;
+    --primary: 225 63% 32%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 13%;
+    --secondary: 213 27% 95%;
+    --secondary-foreground: 225 47% 15%;
 
-    --muted: 0 0% 94%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 213 27% 93%;
+    --muted-foreground: 217 19% 45%;
 
-    --accent: 280 70% 95%;
-    --accent-foreground: 280 70% 40%;
+    --accent: 214 100% 95%;
+    --accent-foreground: 225 63% 28%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 73% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 280 70% 50%;
+    --border: 214 19% 88%;
+    --input: 214 19% 88%;
+    --ring: 225 63% 32%;
 
     --radius: 0.75rem;
 
-    --zepto-purple: 280 70% 50%;
-    --zepto-purple-dark: 280 70% 40%;
-    --zepto-green: 145 63% 42%;
-    --zepto-green-foreground: 0 0% 100%;
-    --zepto-pink: 340 82% 52%;
-    --zepto-yellow: 45 93% 47%;
-    --zepto-orange: 24 95% 53%;
-    --zepto-badge: 145 63% 42%;
+    --everest-success: 142 72% 37%;
+    --everest-success-foreground: 0 0% 100%;
+    --everest-sun: 38 92% 50%;
+    --everest-red: 0 73% 50%;
+    --everest-red-soft: 0 94% 94%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -56,35 +53,54 @@
   }
 
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 95%;
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 280 70% 55%;
+    --background: 225 47% 8%;
+    --foreground: 213 27% 95%;
+    --card: 225 47% 11%;
+    --card-foreground: 213 27% 95%;
+    --popover: 225 47% 11%;
+    --popover-foreground: 213 27% 95%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 280 70% 20%;
-    --accent-foreground: 280 70% 80%;
+    --secondary: 225 47% 16%;
+    --secondary-foreground: 213 27% 95%;
+    --muted: 225 47% 16%;
+    --muted-foreground: 214 19% 60%;
+    --accent: 225 63% 20%;
+    --accent-foreground: 217 91% 75%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 95%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 280 70% 55%;
+    --border: 225 47% 20%;
+    --input: 225 47% 20%;
+    --ring: 217 91% 60%;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
+    overscroll-behavior-y: contain;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Poppins", "Inter", sans-serif;
+  }
+  .font-devanagari {
+    font-family: "Noto Sans Devanagari", sans-serif;
+  }
+  input,
+  button,
+  select,
+  textarea {
+    touch-action: manipulation;
   }
 }
 
@@ -95,5 +111,11 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
   }
 }

@@ -25,7 +25,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<api.CartItem[]>([]);
   const [cartTotal, setCartTotal] = useState(0);
 
-  const isLoggedIn = () => !!localStorage.getItem("zepto_token");
+  const isLoggedIn = () => !!localStorage.getItem("everest_token");
 
   const refreshCart = useCallback(async () => {
     if (!isLoggedIn()) return;

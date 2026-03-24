@@ -1,14 +1,14 @@
 [
   {
     "_id": "u1",
-    "name": "Amit Sharma",
-    "phone": "9876543210",
-    "city": "Bangalore"
+    "name": "Rohan Maharjan",
+    "phone": "9841234567",
+    "city": "Kathmandu"
   },
   {
     "_id": "u2",
-    "name": "Priya Verma",
-    "phone": "9876501234",
-    "city": "Mumbai"
+    "name": "Sita Shrestha",
+    "phone": "9851234567",
+    "city": "Kathmandu"
   }
 ]

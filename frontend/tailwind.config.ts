@@ -2,7 +2,12 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -14,7 +19,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ["Inter", "sans-serif"],
+        display: ["Poppins", "Inter", "sans-serif"],
+        devanagari: ["Noto Sans Devanagari", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -50,14 +57,27 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        zepto: {
-          purple: "hsl(var(--zepto-purple))",
-          "purple-dark": "hsl(var(--zepto-purple-dark))",
-          green: "hsl(var(--zepto-green))",
-          "green-foreground": "hsl(var(--zepto-green-foreground))",
-          pink: "hsl(var(--zepto-pink))",
-          yellow: "hsl(var(--zepto-yellow))",
-          orange: "hsl(var(--zepto-orange))",
+        everest: {
+          blue: "#1E3A8A",
+          blueLight: "#3B82F6",
+          blueDark: "#0F172A",
+
+          red: "#DC2626",
+          redLight: "#EF4444",
+          redSoft: "#FEE2E2",
+
+          snow: "#F8FAFC",
+          snowSoft: "#F1F5F9",
+
+          sun: "#F59E0B",
+          sunLight: "#FCD34D",
+
+          slate: "#475569",
+          slateLight: "#94A3B8",
+
+          success: "#16A34A",
+          warning: "#F59E0B",
+          error: "#DC2626",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

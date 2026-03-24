@@ -7,7 +7,7 @@ const posts = [
     id: 1,
     title: "How we cut delivery time from 30 minutes to 10",
     excerpt:
-      "An inside look at how Zepto re-architected its dark-store network and routing algorithms to hit 10-minute delivery windows consistently.",
+      "An inside look at how Everest Dash re-architected its dark-store network and routing algorithms to hit 10-minute delivery windows consistently.",
     date: "March 8, 2026",
     readTime: "7 min read",
     tag: "Engineering",
@@ -25,9 +25,9 @@ const posts = [
   },
   {
     id: 3,
-    title: "A day in the life of a Zepto delivery partner",
+    title: "A day in the life of an Everest Dash delivery partner",
     excerpt:
-      "We spent a day with Ravi, one of our top-rated delivery partners in Bangalore, to understand what makes the Zepto experience special.",
+      "We spent a day with Ravi, one of our top-rated delivery partners in Bangalore, to understand what makes the Everest Dash experience special.",
     date: "February 5, 2026",
     readTime: "4 min read",
     tag: "Culture",
@@ -35,9 +35,9 @@ const posts = [
   },
   {
     id: 4,
-    title: "Zepto expands to 5 new cities in Q1 2026",
+    title: "Everest Dash expands to 5 new cities in Q1 2026",
     excerpt:
-      "We're thrilled to announce that Zepto is now live in Jaipur, Lucknow, Chandigarh, Kochi, and Coimbatore — bringing 10-minute delivery to millions more.",
+      "We're thrilled to announce that Everest Dash is now live in Jaipur, Lucknow, Chandigarh, Kochi, and Coimbatore — bringing 10-minute delivery to millions more.",
     date: "January 15, 2026",
     readTime: "3 min read",
     tag: "Company",
@@ -47,7 +47,7 @@ const posts = [
     id: 5,
     title: "Sustainable packaging: our 2026 commitment",
     excerpt:
-      "Zepto pledges 100% compostable packaging across all orders by December 2026. Here's the roadmap and why it matters to us.",
+      "Everest Dash pledges 100% compostable packaging across all orders by December 2026. Here's the roadmap and why it matters to us.",
     date: "January 2, 2026",
     readTime: "6 min read",
     tag: "Sustainability",
@@ -90,10 +90,10 @@ const Blog = () => {
 
         <div className="mb-10">
           <h1 className="text-4xl font-extrabold text-foreground mb-3">
-            Zepto Blog
+            Everest Dash Blog
           </h1>
           <p className="text-muted-foreground text-lg">
-            Stories, insights and updates from the Zepto team.
+            Stories, insights and updates from the Everest Dash team.
           </p>
         </div>
 

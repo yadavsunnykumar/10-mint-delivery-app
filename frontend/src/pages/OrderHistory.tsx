@@ -10,10 +10,20 @@ import {
   ShoppingBag,
   ChefHat,
   UserCheck,
+  Navigation,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getUserOrders } from "@/lib/api";
 import type { Order } from "@/lib/api";
+import { CURRENCY_SYMBOL } from "@/lib/constants";
+
+const ACTIVE_STATUSES = new Set([
+  "created",
+  "accepted",
+  "packed",
+  "assigned",
+  "en_route",
+]);
 
 const STATUS_CONFIG: Record<
   string,
@@ -133,7 +143,7 @@ function DeliveryProgress({ status }: { status: string }) {
               className="relative flex flex-col items-center gap-1 z-10"
             >
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center border-2 transition-colors duration-500 ${
+                className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center border-2 transition-colors duration-500 ${
                   done
                     ? "bg-primary border-primary text-primary-foreground"
                     : "bg-card border-border text-muted-foreground"
@@ -142,7 +152,7 @@ function DeliveryProgress({ status }: { status: string }) {
                 {step.icon}
               </div>
               <span
-                className={`text-[9px] font-semibold text-center leading-tight max-w-[40px] ${
+                className={`text-[8px] sm:text-[9px] font-semibold text-center leading-tight max-w-[32px] sm:max-w-[40px] ${
                   done ? "text-primary" : "text-muted-foreground"
                 }`}
               >
@@ -156,8 +166,15 @@ function DeliveryProgress({ status }: { status: string }) {
   );
 }
 
-function OrderCard({ order }: { order: Order }) {
+function OrderCard({
+  order,
+  onTrack,
+}: {
+  order: Order;
+  onTrack: (id: string) => void;
+}) {
   const status = STATUS_CONFIG[order.order_status] ?? STATUS_CONFIG.created;
+  const isActive = ACTIVE_STATUSES.has(order.order_status);
   const date = new Date(order.createdAt).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
@@ -206,16 +223,28 @@ function OrderCard({ order }: { order: Order }) {
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted-foreground">Order Total</span>
         <span className="text-base font-bold text-foreground">
-          ₹{order.total_amount}
+          {CURRENCY_SYMBOL}
+          {order.total_amount}
         </span>
       </div>
+
+      {/* Track button for active orders */}
+      {isActive && (
+        <button
+          onClick={() => onTrack(order.order_id)}
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-primary text-primary font-semibold text-sm hover:bg-primary hover:text-primary-foreground transition-colors"
+        >
+          <Navigation className="w-4 h-4" />
+          Track Order
+        </button>
+      )}
     </div>
   );
 }
 
 function hasActiveOrder(): boolean {
   try {
-    const raw = localStorage.getItem("zepto_active_orders");
+    const raw = localStorage.getItem("everest_active_orders");
     if (!raw) return false;
     const orders = JSON.parse(raw) as unknown[];
     return Array.isArray(orders) && orders.length > 0;
@@ -270,64 +299,70 @@ const OrderHistory = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
-      {/* Back */}
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back
-      </button>
+    <>
+      <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
+        {/* Back */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
 
-      <div className="flex items-center gap-3">
-        <Package className="w-6 h-6 text-primary" />
-        <h1 className="text-xl font-bold text-foreground">My Orders</h1>
+        <div className="flex items-center gap-3">
+          <Package className="w-6 h-6 text-primary" />
+          <h1 className="text-xl font-bold text-foreground">My Orders</h1>
+        </div>
+
+        {isLoading && (
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-32 bg-secondary rounded-2xl animate-pulse"
+              />
+            ))}
+          </div>
+        )}
+
+        {isError && (
+          <div className="text-center py-12 text-muted-foreground">
+            Failed to load orders. Please try again.
+          </div>
+        )}
+
+        {orders && orders.length === 0 && (
+          <div className="flex flex-col items-center gap-5 py-20 text-center">
+            <Package className="w-16 h-16 text-muted-foreground/30" />
+            <h2 className="text-lg font-semibold text-foreground">
+              No orders yet
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              When you place an order, it will appear here
+            </p>
+            <button
+              onClick={() => navigate("/")}
+              className="bg-primary text-primary-foreground font-semibold px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity text-sm"
+            >
+              Start Shopping
+            </button>
+          </div>
+        )}
+
+        {orders && orders.length > 0 && (
+          <div className="space-y-3">
+            {orders.map((order) => (
+              <OrderCard
+                key={order._id}
+                order={order}
+                onTrack={(id) => navigate(`/track/${id}`)}
+              />
+            ))}
+          </div>
+        )}
       </div>
-
-      {isLoading && (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-32 bg-secondary rounded-2xl animate-pulse"
-            />
-          ))}
-        </div>
-      )}
-
-      {isError && (
-        <div className="text-center py-12 text-muted-foreground">
-          Failed to load orders. Please try again.
-        </div>
-      )}
-
-      {orders && orders.length === 0 && (
-        <div className="flex flex-col items-center gap-5 py-20 text-center">
-          <Package className="w-16 h-16 text-muted-foreground/30" />
-          <h2 className="text-lg font-semibold text-foreground">
-            No orders yet
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            When you place an order, it will appear here
-          </p>
-          <button
-            onClick={() => navigate("/")}
-            className="bg-primary text-primary-foreground font-semibold px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity text-sm"
-          >
-            Start Shopping
-          </button>
-        </div>
-      )}
-
-      {orders && orders.length > 0 && (
-        <div className="space-y-3">
-          {orders.map((order) => (
-            <OrderCard key={order._id} order={order} />
-          ))}
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 

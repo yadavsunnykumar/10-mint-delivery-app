@@ -1,21 +1,10 @@
 import Order from "../models/order.model.js";
 import Warehouse from "../models/warehouse.model.js";
 import DeliveryPartner from "../models/deliveryPartner.model.js";
+import Product from "../models/product.model.js";
 import axios from "axios";
 import { findNearestRider } from "../utils/findNearestRider.js";
-
-// Simple Haversine distance in km (no external dep needed)
-function haversineKm(lat1, lng1, lat2, lng2) {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLng = ((lng2 - lng1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
+import { haversineKm } from "../utils/distance.js";
 
 export const createOrder = async (req, res) => {
   try {
@@ -170,7 +159,7 @@ export const getOrderStatus = async (req, res) => {
     const { orderId } = req.params;
     const order = await Order.findOne(
       { order_id: orderId },
-      { order_status: 1, eta_minutes: 1, order_id: 1, user_id: 1 },
+      { order_status: 1, eta_minutes: 1, order_id: 1, user_id: 1, rider_id: 1 },
     );
     if (!order) return res.status(404).json({ error: "Order not found" });
 
@@ -179,14 +168,144 @@ export const getOrderStatus = async (req, res) => {
       return res.status(403).json({ error: "Forbidden" });
     }
 
+    // Populate rider info when assigned
+    let rider = null;
+    if (order.rider_id) {
+      const riderDoc = await DeliveryPartner.findById(order.rider_id, {
+        name: 1,
+        phone: 1,
+        vehicle_number: 1,
+        current_location: 1,
+        rider_id: 1,
+      });
+      if (riderDoc) {
+        rider = {
+          name: riderDoc.name,
+          phone: riderDoc.phone,
+          vehicle_number: riderDoc.vehicle_number,
+          rider_id: riderDoc.rider_id,
+          current_location: riderDoc.current_location,
+        };
+      }
+    }
+
     return res.json({
       success: true,
       order_id: order.order_id,
       order_status: order.order_status,
       eta_minutes: order.eta_minutes,
+      rider,
     });
   } catch {
     return res.status(500).json({ error: "Failed to fetch order status" });
+  }
+};
+
+// GET /api/orders/tracking/:orderId  — full tracking payload for the live map
+export const getOrderTracking = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await Order.findOne({ order_id: orderId });
+    if (!order) return res.status(404).json({ error: "Order not found" });
+
+    if (req.user?.user_id && order.user_id !== req.user.user_id) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    let rider = null;
+    if (order.rider_id) {
+      const riderDoc = await DeliveryPartner.findById(order.rider_id);
+      if (riderDoc) {
+        rider = {
+          name: riderDoc.name,
+          phone: riderDoc.phone,
+          vehicle_number: riderDoc.vehicle_number,
+          rider_id: riderDoc.rider_id,
+          current_location: riderDoc.current_location,
+        };
+      }
+    }
+
+    // Enrich items with product names and images.
+    // Use the native MongoDB collection to bypass Mongoose schema casting so
+    // the lookup works whether _id was stored as a number (legacy seed) or a string.
+    const productIds = order.items.map((i) => String(i.product_id));
+    const numericIds = productIds
+      .filter((id) => !isNaN(+id) && id.trim() !== "")
+      .map((id) => +id);
+    const queryIds = [...new Set([...productIds, ...numericIds])];
+
+    const productDocs = await Product.collection
+      .find(
+        { _id: { $in: queryIds } },
+        { projection: { _id: 1, name: 1, image: 1, price: 1, weight: 1 } },
+      )
+      .toArray();
+
+    const productMap = {};
+    for (const p of productDocs) {
+      productMap[String(p._id)] = p;
+    }
+    const enrichedItems = order.items.map((i) => {
+      const p = productMap[String(i.product_id)];
+      return {
+        product_id: i.product_id,
+        qty: i.qty,
+        name: p?.name ?? null,
+        image: p?.image ?? "",
+        price: p?.price ?? null,
+        weight: p?.weight ?? "",
+      };
+    });
+
+    // Warehouse info
+    let warehouse_location = null;
+    let warehouse_name = null;
+    const wh = await Warehouse.findOne(
+      { warehouse_id: order.warehouse_id },
+      { location: 1, name: 1 },
+    );
+    if (wh) {
+      warehouse_location = wh.location;
+      warehouse_name = wh.name;
+    }
+
+    // ── Live distance-based ETA ──────────────────────────────────────────
+    // Source point: rider's current GPS if available, else warehouse
+    // Destination:  customer's saved user_location
+    // Formula: ceil(distance_km / 20 km·h⁻¹ * 60) + 2 min buffer
+    //          (20 km/h = realistic Kathmandu average incl. traffic)
+    let eta_minutes = order.eta_minutes ?? 10; // keep stored value as fallback
+    const dest = order.user_location;
+    if (dest) {
+      const source = rider?.current_location ?? warehouse_location;
+      if (source) {
+        const distKm = haversineKm(source.lat, source.lng, dest.lat, dest.lng);
+        eta_minutes = Math.max(2, Math.ceil((distKm / 20) * 60) + 2);
+      }
+    }
+    // For delivered/cancelled orders just return 0
+    if (["delivered", "cancelled"].includes(order.order_status))
+      eta_minutes = 0;
+
+    return res.json({
+      success: true,
+      order_id: order.order_id,
+      order_status: order.order_status,
+      eta_minutes,
+      total_amount: order.total_amount,
+      payment_status: order.payment_status,
+      created_at: order.createdAt,
+      warehouse_id: order.warehouse_id,
+      warehouse_name,
+      items: enrichedItems,
+      user_location: order.user_location,
+      warehouse_location,
+      rider,
+    });
+  } catch (error) {
+    console.error("Get order tracking error:", error);
+    return res.status(500).json({ error: "Failed to fetch tracking data" });
   }
 };
 

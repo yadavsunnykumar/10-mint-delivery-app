@@ -15,7 +15,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [isDark, setIsDark] = useState(() => {
-    const stored = localStorage.getItem("zepto_theme");
+    const stored = localStorage.getItem("everest_theme");
     if (stored) return stored === "dark";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
@@ -27,7 +27,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } else {
       root.classList.remove("dark");
     }
-    localStorage.setItem("zepto_theme", isDark ? "dark" : "light");
+    localStorage.setItem("everest_theme", isDark ? "dark" : "light");
   }, [isDark]);
 
   const toggle = () => setIsDark((prev) => !prev);

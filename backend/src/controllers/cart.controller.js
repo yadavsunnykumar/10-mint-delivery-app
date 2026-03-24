@@ -7,13 +7,24 @@ export const getCart = async (req, res) => {
     const cart = await Cart.findOne({ user_id });
     if (!cart) return res.json({ success: true, items: [], total: 0 });
 
-    const productIds = cart.items.map((i) => i.product_id);
-    const products = await Product.find({ _id: { $in: productIds } });
-    const productMap = Object.fromEntries(products.map((p) => [p._id, p]));
+    const productIds = cart.items.map((i) => String(i.product_id));
+    const numericIds = productIds
+      .filter((id) => !isNaN(+id) && id.trim() !== "")
+      .map((id) => +id);
+    const queryIds = [...new Set([...productIds, ...numericIds])];
+
+    // Use native driver to bypass Mongoose schema casting (handles string & numeric _id)
+    const productDocs = await Product.collection
+      .find({ _id: { $in: queryIds } })
+      .toArray();
+    const productMap = {};
+    for (const p of productDocs) {
+      productMap[String(p._id)] = p;
+    }
 
     const enriched = cart.items.map((item) => {
-      const product = productMap[item.product_id];
-      return { ...item.toObject(), product: product || null };
+      const product = productMap[String(item.product_id)] || null;
+      return { ...item.toObject(), product };
     });
 
     const total = enriched.reduce((sum, item) => {

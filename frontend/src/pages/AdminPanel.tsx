@@ -21,53 +21,17 @@ import {
   adminUpdateOrderStatus,
 } from "@/lib/api";
 import type { Product, Order } from "@/lib/api";
-
-const ADMIN_KEY = "zepto-admin-2024";
-
-const ORDER_STATUSES = [
-  "created",
-  "accepted",
-  "packed",
-  "assigned",
-  "en_route",
-  "delivered",
-  "cancelled",
-];
-
-const STATUS_COLORS: Record<string, string> = {
-  created: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  accepted:
-    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-  packed:
-    "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-  assigned:
-    "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-  en_route: "bg-primary/10 text-primary",
-  delivered:
-    "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  cancelled: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-};
+import {
+  ADMIN_KEY,
+  ORDER_STATUSES,
+  STATUS_COLORS,
+  PRODUCT_CATEGORIES,
+  CURRENCY_SYMBOL,
+} from "@/lib/constants";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Add-Product form (inline panel)
 // ──────────────────────────────────────────────────────────────────────────────
-const CATEGORIES = [
-  "Fruits & Vegetables",
-  "Dairy & Breakfast",
-  "Snacks & Munchies",
-  "Cold Drinks & Juices",
-  "Instant & Frozen Food",
-  "Tea, Coffee & Health Drink",
-  "Bakery & Biscuits",
-  "Sweet Tooth",
-  "Atta, Rice & Dal",
-  "Masala, Oil & More",
-  "Sauces & Spreads",
-  "Chicken, Meat & Fish",
-  "Paan Corner",
-  "Pharma & Wellness",
-  "Home & Office",
-];
 
 type NewProduct = {
   name: string;
@@ -127,7 +91,7 @@ function AddProductPanel({ onClose }: { onClose: () => void }) {
     setForm((f) => ({ ...f, [k]: v }));
 
   const field =
-    "w-full bg-gray-800 border border-gray-700 text-white placeholder:text-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50";
+    "w-full bg-gray-800 border border-gray-700 text-white placeholder:text-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50";
 
   return (
     <div className="bg-gray-900 border border-gray-700 rounded-2xl p-5 space-y-4">
@@ -166,7 +130,7 @@ function AddProductPanel({ onClose }: { onClose: () => void }) {
             onChange={(e) => set("category", e.target.value)}
           >
             <option value="">Select category…</option>
-            {CATEGORIES.map((c) => (
+            {PRODUCT_CATEGORIES.map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>
@@ -188,7 +152,7 @@ function AddProductPanel({ onClose }: { onClose: () => void }) {
         {/* Price */}
         <div className="space-y-1">
           <label className="text-xs text-gray-400 font-medium">
-            Selling Price (₹) *
+            Selling Price ({CURRENCY_SYMBOL}) *
           </label>
           <input
             className={field}
@@ -202,7 +166,9 @@ function AddProductPanel({ onClose }: { onClose: () => void }) {
 
         {/* Original Price */}
         <div className="space-y-1">
-          <label className="text-xs text-gray-400 font-medium">MRP (₹) *</label>
+          <label className="text-xs text-gray-400 font-medium">
+            MRP ({CURRENCY_SYMBOL}) *
+          </label>
           <input
             className={field}
             type="number"
@@ -333,7 +299,7 @@ function AddProductPanel({ onClose }: { onClose: () => void }) {
             !form.price ||
             !form.originalPrice
           }
-          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-colors"
+          className="flex items-center gap-2 bg-blue-700 hover:bg-blue-600 disabled:opacity-50 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-colors"
         >
           {createMutation.isPending ? (
             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -399,7 +365,7 @@ function ProductsTab() {
           </button>
           <button
             onClick={() => setAddOpen((o) => !o)}
-            className="flex items-center gap-1.5 text-xs bg-purple-600 hover:bg-purple-500 text-white font-semibold px-3 py-1.5 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 text-xs bg-blue-700 hover:bg-blue-600 text-white font-semibold px-3 py-1.5 rounded-lg transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             Add Product
@@ -408,62 +374,70 @@ function ProductsTab() {
       </div>
 
       <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="grid grid-cols-[1fr_80px_90px_70px] gap-3 px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-secondary/50 border-b border-border">
-          <span>Product</span>
-          <span className="text-center">Price</span>
-          <span className="text-center">Stock</span>
-          <span className="text-center">Save</span>
-        </div>
-        <div className="divide-y divide-border max-h-[600px] overflow-y-auto">
-          {products?.map((product: Product & { _id?: string }) => {
-            const pid =
-              (product as Product & { _id?: string })._id ?? product.id;
-            const editStock = editMap[pid] ?? product.stock ?? 50;
-            return (
-              <div
-                key={pid}
-                className="grid grid-cols-[1fr_80px_90px_70px] gap-3 px-4 py-3 items-center"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-9 h-9 object-contain rounded bg-secondary flex-shrink-0"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {product.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {product.category}
-                    </p>
+        <div className="overflow-x-auto">
+          <div className="min-w-[420px]">
+            <div className="grid grid-cols-[1fr_80px_90px_70px] gap-3 px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-secondary/50 border-b border-border">
+              <span>Product</span>
+              <span className="text-center">Price</span>
+              <span className="text-center">Stock</span>
+              <span className="text-center">Save</span>
+            </div>
+            <div className="divide-y divide-border max-h-[600px] overflow-y-auto">
+              {products?.map((product: Product & { _id?: string }) => {
+                const pid =
+                  (product as Product & { _id?: string })._id ?? product.id;
+                const editStock = editMap[pid] ?? product.stock ?? 50;
+                return (
+                  <div
+                    key={pid}
+                    className="grid grid-cols-[1fr_80px_90px_70px] gap-3 px-4 py-3 items-center"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-9 h-9 object-contain rounded bg-secondary flex-shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">
+                          {product.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {product.category}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-foreground text-center">
+                      {CURRENCY_SYMBOL}
+                      {product.price}
+                    </span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={999}
+                      value={editStock}
+                      onChange={(e) =>
+                        setEditMap((m) => ({
+                          ...m,
+                          [pid]: Number(e.target.value),
+                        }))
+                      }
+                      className="w-full text-center bg-secondary border border-border rounded px-1 py-1 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                    <button
+                      onClick={() =>
+                        stockMutation.mutate({ id: pid, stock: editStock })
+                      }
+                      disabled={stockMutation.isPending}
+                      className="text-xs bg-primary text-primary-foreground font-semibold px-2 py-1.5 rounded-lg hover:opacity-90 disabled:opacity-60 w-full"
+                    >
+                      Save
+                    </button>
                   </div>
-                </div>
-                <span className="text-sm font-semibold text-foreground text-center">
-                  ₹{product.price}
-                </span>
-                <input
-                  type="number"
-                  min={0}
-                  max={999}
-                  value={editStock}
-                  onChange={(e) =>
-                    setEditMap((m) => ({ ...m, [pid]: Number(e.target.value) }))
-                  }
-                  className="w-full text-center bg-secondary border border-border rounded px-1 py-1 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-                <button
-                  onClick={() =>
-                    stockMutation.mutate({ id: pid, stock: editStock })
-                  }
-                  disabled={stockMutation.isPending}
-                  className="text-xs bg-primary text-primary-foreground font-semibold px-2 py-1.5 rounded-lg hover:opacity-90 disabled:opacity-60 w-full"
-                >
-                  Save
-                </button>
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -540,7 +514,8 @@ function OrdersTab() {
               </p>
               <p className="text-xs text-muted-foreground">
                 {new Date(order.createdAt).toLocaleString("en-IN")} ·{" "}
-                {order.items.length} items · ₹{order.total_amount}
+                {order.items.length} items · {CURRENCY_SYMBOL}
+                {order.total_amount}
               </p>
               <span
                 className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full ${STATUS_COLORS[order.order_status] ?? ""}`}
@@ -581,7 +556,7 @@ function OrdersTab() {
 const AdminPanel = () => {
   const navigate = useNavigate();
   const [authed, setAuthed] = useState(
-    () => sessionStorage.getItem("zepto_admin") === ADMIN_KEY,
+    () => sessionStorage.getItem("everest_admin") === ADMIN_KEY,
   );
   const [password, setPassword] = useState("");
   const [tab, setTab] = useState<"orders" | "products">("orders");
@@ -590,7 +565,7 @@ const AdminPanel = () => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === ADMIN_KEY) {
-      sessionStorage.setItem("zepto_admin", ADMIN_KEY);
+      sessionStorage.setItem("everest_admin", ADMIN_KEY);
       setAuthed(true);
       setError("");
     } else {
@@ -599,7 +574,7 @@ const AdminPanel = () => {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem("zepto_admin");
+    sessionStorage.removeItem("everest_admin");
     setAuthed(false);
     setPassword("");
   };
@@ -610,9 +585,9 @@ const AdminPanel = () => {
       {/* Top bar */}
       <header className="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <Shield className="w-5 h-5 text-purple-400" />
+          <Shield className="w-5 h-5 text-everest-blueLight" />
           <span className="font-bold text-white text-lg tracking-tight">
-            Zepto <span className="text-purple-400">Admin</span>
+            Everest <span className="text-everest-blueLight">Admin</span>
           </span>
         </div>
         <div className="flex items-center gap-3">
@@ -635,8 +610,8 @@ const AdminPanel = () => {
           <div className="flex items-center justify-center min-h-[80vh] px-4">
             <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 max-w-sm w-full space-y-5 shadow-2xl">
               <div className="flex flex-col items-center gap-3">
-                <div className="w-14 h-14 rounded-full bg-purple-500/20 flex items-center justify-center">
-                  <Shield className="w-7 h-7 text-purple-400" />
+                <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <Shield className="w-7 h-7 text-everest-blueLight" />
                 </div>
                 <h1 className="text-xl font-bold text-white">Admin Access</h1>
                 <p className="text-sm text-gray-400 text-center">
@@ -649,21 +624,21 @@ const AdminPanel = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Admin Key"
-                  className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 placeholder:text-gray-500"
+                  className="w-full bg-gray-800 text-white border border-gray-700 px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 placeholder:text-gray-500"
                 />
                 {error && (
                   <p className="text-xs text-red-400 font-medium">{error}</p>
                 )}
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
+                  className="w-full flex items-center justify-center gap-2 bg-blue-700 hover:bg-blue-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm"
                 >
                   <Lock className="w-4 h-4" />
                   Enter Admin Panel
                 </button>
               </form>
               <p className="text-xs text-gray-600 text-center">
-                Hint: zepto-admin-2024
+                Hint: everest-admin-2024
               </p>
             </div>
           </div>
@@ -671,9 +646,9 @@ const AdminPanel = () => {
           /* ── Dashboard ── */
           <div className="max-w-6xl mx-auto px-4 py-6 space-y-5">
             <div className="flex items-center gap-3">
-              <Shield className="w-5 h-5 text-purple-400" />
+              <Shield className="w-5 h-5 text-everest-blueLight" />
               <h1 className="text-xl font-bold text-white">Dashboard</h1>
-              <span className="text-xs bg-purple-500/20 text-purple-400 font-semibold px-2.5 py-0.5 rounded-full border border-purple-500/30">
+              <span className="text-xs bg-blue-500/20 text-blue-400 font-semibold px-2.5 py-0.5 rounded-full border border-blue-500/30">
                 Admin
               </span>
             </div>

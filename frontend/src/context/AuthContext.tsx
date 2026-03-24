@@ -13,6 +13,8 @@ interface User {
   user_id: string;
   name: string;
   phone: string;
+  alt_phone?: string;
+  avatar?: string;
 }
 
 interface AuthContextValue {
@@ -21,6 +23,7 @@ interface AuthContextValue {
   openLoginModal: () => void;
   closeLoginModal: () => void;
   logout: () => void;
+  updateUser: (partial: Partial<User>) => void;
   loginModalOpen: boolean;
 }
 
@@ -28,7 +31,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem("zepto_user");
+    const saved = localStorage.getItem("everest_user");
     return saved ? JSON.parse(saved) : null;
   });
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -42,18 +45,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const closeLoginModal = useCallback(() => setLoginModalOpen(false), []);
 
   const login = useCallback((token: string, userData: User) => {
-    localStorage.setItem("zepto_token", token);
-    localStorage.setItem("zepto_user", JSON.stringify(userData));
+    localStorage.setItem("everest_token", token);
+    localStorage.setItem("everest_user", JSON.stringify(userData));
     setUser(userData);
     setLoginModalOpen(false);
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem("zepto_token");
-    localStorage.removeItem("zepto_user");
+    localStorage.removeItem("everest_token");
+    localStorage.removeItem("everest_user");
     setUser(null);
     clearCart();
   }, [clearCart]);
+
+  const updateUser = useCallback((partial: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, ...partial };
+      localStorage.setItem("everest_user", JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   const isLoggedIn = !!user;
 
@@ -65,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         openLoginModal,
         closeLoginModal,
         logout,
+        updateUser,
         loginModalOpen,
       }}
     >
@@ -92,6 +105,7 @@ function LoginModal({
   onClose: () => void;
 }) {
   const [step, setStep] = useState<"phone" | "otp">("phone");
+  const [countryCode, setCountryCode] = useState("+977");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [name, setName] = useState("");
@@ -107,7 +121,8 @@ function LoginModal({
     setLoading(true);
     setError("");
     try {
-      const res = await api.sendOtp(phone);
+      const fullPhone = `${countryCode}${phone}`;
+      const res = await api.sendOtp(fullPhone);
       setIsNewUser(res.is_new_user);
       // Dev: auto-fill OTP if returned
       if (res.otp) setOtp(res.otp);
@@ -124,10 +139,18 @@ function LoginModal({
       setError("Enter the OTP");
       return;
     }
+    if (isNewUser && !name.trim()) {
+      setError("Please enter your name");
+      return;
+    }
     setLoading(true);
     setError("");
     try {
-      const res = await api.verifyOtp(phone, otp, isNewUser ? name : undefined);
+      const res = await api.verifyOtp(
+        `${countryCode}${phone}`,
+        otp,
+        isNewUser ? name : undefined,
+      );
       onLogin(res.token, res.user);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Invalid OTP");
@@ -151,7 +174,7 @@ function LoginModal({
         <p className="text-sm text-muted-foreground mb-5">
           {step === "phone"
             ? "Get groceries delivered in 10 minutes"
-            : `OTP sent to +91 ${phone}`}
+            : `OTP sent to ${countryCode} ${phone}`}
         </p>
 
         {error && <p className="text-xs text-destructive mb-3">{error}</p>}
@@ -159,9 +182,14 @@ function LoginModal({
         {step === "phone" ? (
           <>
             <div className="flex items-center border border-border rounded-lg overflow-hidden mb-4">
-              <span className="px-3 py-2.5 text-sm text-muted-foreground bg-secondary border-r border-border">
-                +91
-              </span>
+              <select
+                value={countryCode}
+                onChange={(e) => setCountryCode(e.target.value)}
+                className="px-2 py-2.5 text-sm text-foreground bg-secondary border-r border-border focus:outline-none cursor-pointer"
+              >
+                <option value="+977">🇳🇵 +977</option>
+                <option value="+91">🇮🇳 +91</option>
+              </select>
               <input
                 type="tel"
                 maxLength={10}
@@ -183,13 +211,18 @@ function LoginModal({
         ) : (
           <>
             {isNewUser && (
-              <input
-                type="text"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full border border-border rounded-lg px-3 py-2.5 text-sm text-foreground bg-card focus:outline-none mb-3"
-              />
+              <div className="mb-3">
+                <label className="block text-xs font-semibold text-foreground mb-1">
+                  Your Name <span className="text-destructive">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm text-foreground bg-card focus:outline-none focus:ring-2 focus:ring-primary/30"
+                />
+              </div>
             )}
             <input
               type="text"

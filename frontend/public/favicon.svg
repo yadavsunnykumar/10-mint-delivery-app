@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="16" fill="#1E3A8A"/>
+  <!-- Mountain peak (Everest silhouette) -->
+  <polygon points="16,5 6,24 26,24" fill="#F8FAFC" opacity="0.95"/>
+  <!-- Snow cap highlight -->
+  <polygon points="16,5 12,14 20,14" fill="#FFFFFF"/>
+  <!-- Small foreground hill left -->
+  <polygon points="4,24 10,16 16,24" fill="#3B82F6" opacity="0.7"/>
+  <!-- Small foreground hill right -->
+  <polygon points="28,24 22,16 16,24" fill="#3B82F6" opacity="0.7"/>
+  <!-- Base ground -->
+  <rect x="4" y="24" width="24" height="3" rx="1.5" fill="#F59E0B" opacity="0.9"/>
+</svg>
