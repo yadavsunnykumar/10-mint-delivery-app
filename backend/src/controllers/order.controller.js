@@ -14,7 +14,10 @@ export const createOrder = async (req, res) => {
       user_location,
       items,
       total_amount,
-      ...orderData
+      payment_method = "cod",
+      promo_code = null,
+      promo_discount = 0,
+      delivery_instructions = "",
     } = req.body;
 
     if (
@@ -74,9 +77,24 @@ export const createOrder = async (req, res) => {
       items,
       total_amount,
       payment_status: "pending",
+      payment_method,
+      promo_code,
+      promo_discount,
+      delivery_instructions,
       eta_minutes: etaMinutes,
       rider_id: rider?._id || null,
     });
+
+    // Increment sales count for each product ordered
+    const productSalesBulk = items.map((item) => ({
+      updateOne: {
+        filter: { _id: String(item.product_id) },
+        update: { $inc: { sales: item.qty ?? 1 } },
+      },
+    }));
+    if (productSalesBulk.length) {
+      await Product.bulkWrite(productSalesBulk).catch(() => {});
+    }
 
     res.status(201).json({
       success: true,
@@ -306,6 +324,46 @@ export const getOrderTracking = async (req, res) => {
   } catch (error) {
     console.error("Get order tracking error:", error);
     return res.status(500).json({ error: "Failed to fetch tracking data" });
+  }
+};
+
+// POST /api/orders/cancel/:orderId
+export const cancelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { reason } = req.body;
+    const order = await Order.findOne({ order_id: orderId });
+    if (!order) return res.status(404).json({ error: "Order not found" });
+
+    // Only the order owner can cancel
+    if (req.user?.user_id && order.user_id !== req.user.user_id) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    const cancellableStatuses = ["created", "accepted"];
+    if (!cancellableStatuses.includes(order.order_status)) {
+      return res.status(400).json({
+        error: `Cannot cancel order in '${order.order_status}' status. Only orders in 'created' or 'accepted' can be cancelled.`,
+      });
+    }
+
+    order.order_status = "cancelled";
+    if (reason) order.cancellation_reason = reason;
+    await order.save();
+
+    // Free up the rider if one was assigned
+    if (order.rider_id) {
+      await DeliveryPartner.findByIdAndUpdate(order.rider_id, { is_available: true }).catch(() => {});
+    }
+
+    // Emit socket event for real-time update
+    const io = req.app.get("io");
+    if (io) io.emit(`order-${orderId}`, { order_status: "cancelled" });
+
+    return res.json({ success: true, order_id: orderId, order_status: "cancelled" });
+  } catch (error) {
+    console.error("Cancel order error:", error);
+    return res.status(500).json({ error: "Failed to cancel order" });
   }
 };
 

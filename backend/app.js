@@ -17,16 +17,16 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use("/ai", aiRoutes);
-app.use("/orders", orderRoutes);
-app.use("/riders", riderRoutes);
-app.use("/delivery", deliveryRoutes);
-app.use("/socket", socketRoutes);
-app.use("/products", productRoutes);
-app.use("/auth", authRoutes);
-app.use("/cart", cartRoutes);
-app.use("/warehouses", warehouseRoutes);
-app.use("/admin", adminRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/riders", riderRoutes);
+app.use("/api/delivery", deliveryRoutes);
+app.use("/api/socket", socketRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/warehouses", warehouseRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => res.send("Everest Dash API running"));
 export default app;

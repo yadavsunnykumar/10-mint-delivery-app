@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "Everest Dash",
+    "slug": "everest-dash",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1E3A8A"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.everestdash.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to deliver groceries to your address.",
+        "NSLocationAlwaysUsageDescription": "We need your location to track your delivery.",
+        "NSCameraUsageDescription": "Used to update your profile picture.",
+        "NSPhotoLibraryUsageDescription": "Used to choose a profile picture."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1E3A8A"
+      },
+      "package": "com.everestdash.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Everest Dash to use your location."
+        }
+      ]
+    ]
+  }
+}

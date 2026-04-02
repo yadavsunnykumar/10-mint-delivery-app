@@ -39,7 +39,12 @@ const App = () => (
         <CartProvider>
           <AuthProvider>
             <LocationProvider>
-              <BrowserRouter>
+              <BrowserRouter
+                future={{
+                  v7_startTransition: true,
+                  v7_relativeSplatPath: true,
+                }}
+              >
                 <Routes>
                   {/* All pages share the AppLayout shell (header + category tabs) */}
                   {/* Standalone admin — no user layout */}

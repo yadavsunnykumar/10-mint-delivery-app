@@ -74,6 +74,7 @@ export default function ActiveOrderBanner() {
 
   const pollAll = useCallback(
     async (states: OrderState[]) => {
+      if (!localStorage.getItem("everest_token")) return; // skip when not logged in
       if (isPollingRef.current) return; // skip if previous poll still in-flight
       isPollingRef.current = true;
       const active = states.filter((s) => !TERMINAL.has(s.status));
@@ -103,8 +104,13 @@ export default function ActiveOrderBanner() {
                   removeOrder(order.orderId);
                 }, delay);
               }
-            } catch {
-              // individual order fetch failure — skip silently
+            } catch (err) {
+              // On 403/404 the order doesn't belong to this user or no longer exists
+              // — drop it immediately to stop further polling
+              const msg = err instanceof Error ? err.message : "";
+              if (msg === "Forbidden" || msg === "Order not found") {
+                removeOrder(order.orderId);
+              }
             }
           }),
         );

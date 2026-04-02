@@ -3,6 +3,7 @@ import { MapPin, LocateFixed, Search, ChevronRight, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -116,6 +117,9 @@ export default function LocationModal() {
             <MapPin className="w-4 h-4 text-primary" />
             Select Delivery Location
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Search for an area, city, or pincode, or use your current location.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="px-5 pt-4 space-y-3">

@@ -1,4 +1,9 @@
-const BASE = "/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL, ADMIN_KEY } from "./constants";
+
+const BASE = `${API_BASE_URL}/api`;
+
+// ── Types ──────────────────────────────────────────────────────────────────────
 
 export interface Product {
   id: string;
@@ -8,12 +13,15 @@ export interface Product {
   originalPrice: number;
   discount: string;
   weight: string;
+  unit: string;
   rating?: number;
-  ratingCount?: string;
+  ratingCount?: number;
   tag?: string;
   category: string;
   brand?: string;
+  description?: string;
   stock?: number;
+  tags?: string[];
 }
 
 export interface CartItem {
@@ -28,29 +36,130 @@ export interface CartResponse {
   total: number;
 }
 
-function authHeaders(): HeadersInit {
-  const token = localStorage.getItem("everest_token");
+export type OrderStatus =
+  | "created"
+  | "accepted"
+  | "packed"
+  | "assigned"
+  | "en_route"
+  | "delivered"
+  | "cancelled";
+
+export interface Order {
+  _id: string;
+  order_id: string;
+  user_id: string;
+  warehouse_id: string;
+  items: Array<{ product_id: string; qty: number; price?: number }>;
+  total_amount: number;
+  promo_code?: string | null;
+  promo_discount?: number;
+  payment_status: "pending" | "paid" | "failed";
+  payment_method?: "upi" | "card" | "cod" | "wallet";
+  order_status: OrderStatus;
+  eta_minutes?: number;
+  delivery_instructions?: string;
+  cancellation_reason?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderItem {
+  product_id: string;
+  qty: number;
+  price: number;
+}
+
+export interface PlaceOrderResponse {
+  success: boolean;
+  order: {
+    order_id: string;
+    eta_minutes: number;
+    total_amount: number;
+    status: string;
+  };
+}
+
+export interface OrderTracking {
+  order_id: string;
+  order_status: OrderStatus;
+  eta_minutes: number;
+  total_amount?: number;
+  payment_status?: string;
+  payment_method?: string;
+  created_at?: string;
+  warehouse_id?: string;
+  warehouse_name?: string;
+  cancellation_reason?: string | null;
+  delivery_instructions?: string;
+  items?: Array<{
+    product_id: string;
+    qty: number;
+    name?: string;
+    image?: string;
+    price?: number | null;
+    weight?: string;
+  }>;
+  user_location: { lat: number; lng: number };
+  warehouse_location?: { lat: number; lng: number } | null;
+  rider?: {
+    name: string;
+    phone?: string;
+    vehicle_number?: string;
+    rider_id?: string;
+    current_location?: { lat: number; lng: number };
+  } | null;
+}
+
+export interface Warehouse {
+  warehouse_id: string;
+  name: string;
+  location: { lat: number; lng: number };
+  address?: string;
+  city?: string;
+}
+
+export interface Recommendations {
+  trending: Product[];
+  personalized: Product[];
+  frequently_bought_together: Product[];
+}
+
+export interface EtaEstimate {
+  eta_minutes: number;
+  distance_km: number;
+  warehouse_name: string;
+  warehouse_city: string;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+async function authHeaders(): Promise<HeadersInit> {
+  const token = await AsyncStorage.getItem("everest_token");
   return token
     ? { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
     : { "Content-Type": "application/json" };
 }
 
-function adminHeaders(): HeadersInit {
-  const adminKey = sessionStorage.getItem("everest_admin") ?? "";
-  return { ...authHeaders(), "X-Admin-Key": adminKey };
+async function adminHeaders(): Promise<HeadersInit> {
+  const base = await authHeaders();
+  return { ...base, "X-Admin-Key": ADMIN_KEY };
 }
 
 async function json<T>(res: Response): Promise<T> {
   if (!res.ok) {
-    if (res.status === 401) {
-      // Token missing or expired — clear stale credentials
-      localStorage.removeItem("everest_token");
-      localStorage.removeItem("everest_user");
-    }
     const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || res.statusText);
+    throw new Error((err as { error?: string }).error || res.statusText);
   }
   return res.json() as Promise<T>;
+}
+
+function normalizeProduct(p: Record<string, unknown>): Product {
+  return {
+    ...(p as unknown as Product),
+    id: (p.id ?? p._id ?? "") as string,
+    ratingCount: typeof p.ratingCount === "string" ? Number(p.ratingCount) || 0 : (p.ratingCount as number ?? 0),
+  };
 }
 
 // ── Products ──────────────────────────────────────────────────────────────────
@@ -58,15 +167,29 @@ async function json<T>(res: Response): Promise<T> {
 export async function fetchProducts(params?: {
   category?: string;
   search?: string;
-}): Promise<Product[]> {
+  limit?: number;
+  offset?: number;
+  sort?: "popular" | "price_asc" | "price_desc" | "rating" | "name";
+}): Promise<{ products: Product[]; total: number }> {
   const qs = new URLSearchParams();
   if (params?.category) qs.set("category", params.category);
   if (params?.search) qs.set("search", params.search);
-  const url = `${BASE}/products${qs.size ? `?${qs}` : ""}`;
-  const data = await json<{ success: boolean; products: Product[] }>(
+  if (params?.limit) qs.set("limit", String(params.limit));
+  if (params?.offset) qs.set("offset", String(params.offset));
+  if (params?.sort) qs.set("sort", params.sort);
+  const queryStr = qs.toString();
+  const url = `${BASE}/products${queryStr ? `?${queryStr}` : ""}`;
+  const data = await json<{ success: boolean; products: Product[]; total: number }>(
     await fetch(url),
   );
-  return data.products;
+  return { products: data.products, total: data.total ?? data.products.length };
+}
+
+export async function fetchProductById(id: string): Promise<Product> {
+  const data = await json<{ success: boolean; product: Product }>(
+    await fetch(`${BASE}/products/${encodeURIComponent(id)}`),
+  );
+  return normalizeProduct(data.product as unknown as Record<string, unknown>);
 }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -118,7 +241,7 @@ export async function updateProfile(data: {
   return json(
     await fetch(`${BASE}/auth/profile`, {
       method: "PATCH",
-      headers: authHeaders(),
+      headers: await authHeaders(),
       body: JSON.stringify(data),
     }),
   );
@@ -127,7 +250,7 @@ export async function updateProfile(data: {
 // ── Cart ──────────────────────────────────────────────────────────────────────
 
 export async function getCart(): Promise<CartResponse> {
-  return json(await fetch(`${BASE}/cart`, { headers: authHeaders() }));
+  return json(await fetch(`${BASE}/cart`, { headers: await authHeaders() }));
 }
 
 export async function addToCart(
@@ -137,7 +260,7 @@ export async function addToCart(
   return json(
     await fetch(`${BASE}/cart/add`, {
       method: "POST",
-      headers: authHeaders(),
+      headers: await authHeaders(),
       body: JSON.stringify({ product_id, qty }),
     }),
   );
@@ -150,7 +273,7 @@ export async function updateCartItem(
   return json(
     await fetch(`${BASE}/cart/item/${product_id}`, {
       method: "PUT",
-      headers: authHeaders(),
+      headers: await authHeaders(),
       body: JSON.stringify({ qty }),
     }),
   );
@@ -162,7 +285,7 @@ export async function removeFromCart(
   return json(
     await fetch(`${BASE}/cart/item/${product_id}`, {
       method: "DELETE",
-      headers: authHeaders(),
+      headers: await authHeaders(),
     }),
   );
 }
@@ -171,20 +294,12 @@ export async function clearCartApi(): Promise<{ success: boolean }> {
   return json(
     await fetch(`${BASE}/cart/clear`, {
       method: "DELETE",
-      headers: authHeaders(),
+      headers: await authHeaders(),
     }),
   );
 }
 
 // ── AI Search ─────────────────────────────────────────────────────────────────
-// AI service returns raw Mongo docs with `_id` instead of `id`.
-// Normalise so ProductCard always gets a defined, unique `id` key.
-function normalizeProduct(p: Record<string, unknown>): Product {
-  return {
-    ...(p as unknown as Product),
-    id: (p.id ?? p._id ?? "") as string,
-  };
-}
 
 export async function aiSearch(q: string): Promise<Product[]> {
   const data = await json<{
@@ -195,35 +310,19 @@ export async function aiSearch(q: string): Promise<Product[]> {
 }
 
 // ── AI Recommendations ────────────────────────────────────────────────────────
-export interface Recommendations {
-  trending: Product[];
-  personalized: Product[];
-  frequently_bought_together: Product[];
-}
 
-export async function getRecommendations(
-  userId: string,
-): Promise<Recommendations> {
+export async function getRecommendations(userId: string): Promise<Recommendations> {
   const data = await json<Record<string, Record<string, unknown>[]>>(
     await fetch(`${BASE}/ai/recommend/${encodeURIComponent(userId)}`),
   );
   return {
     trending: (data.trending ?? []).map(normalizeProduct),
     personalized: (data.personalized ?? []).map(normalizeProduct),
-    frequently_bought_together: (data.frequently_bought_together ?? []).map(
-      normalizeProduct,
-    ),
+    frequently_bought_together: (data.frequently_bought_together ?? []).map(normalizeProduct),
   };
 }
 
 // ── Warehouses ────────────────────────────────────────────────────────────────
-export interface Warehouse {
-  warehouse_id: string;
-  name: string;
-  location: { lat: number; lng: number };
-  address?: string;
-  city?: string;
-}
 
 export async function getWarehouses(): Promise<Warehouse[]> {
   const data = await json<{ success: boolean; warehouses: Warehouse[] }>(
@@ -233,62 +332,43 @@ export async function getWarehouses(): Promise<Warehouse[]> {
 }
 
 // ── Orders ────────────────────────────────────────────────────────────────────
-export interface OrderItem {
-  product_id: string;
-  qty: number;
-  price: number;
-}
-
-export interface PlaceOrderResponse {
-  success: boolean;
-  order: {
-    order_id: string;
-    eta_minutes: number;
-    total_amount: number;
-    status: string;
-  };
-}
 
 export async function placeOrder(data: {
   warehouse_id: string;
   user_location: { lat: number; lng: number };
   items: OrderItem[];
   total_amount: number;
+  payment_method?: "upi" | "card" | "cod" | "wallet";
+  promo_code?: string | null;
+  promo_discount?: number;
+  delivery_instructions?: string;
 }): Promise<PlaceOrderResponse> {
   return json(
     await fetch(`${BASE}/orders/create`, {
       method: "POST",
-      headers: authHeaders(),
+      headers: await authHeaders(),
       body: JSON.stringify(data),
     }),
   );
 }
 
-export interface Order {
-  _id: string;
-  order_id: string;
-  user_id: string;
-  warehouse_id: string;
-  items: Array<{ product_id: string; qty: number; price?: number }>;
-  total_amount: number;
-  payment_status: "pending" | "paid" | "failed";
-  order_status:
-    | "created"
-    | "accepted"
-    | "packed"
-    | "assigned"
-    | "en_route"
-    | "delivered"
-    | "cancelled";
-  eta_minutes?: number;
-  createdAt: string;
-  updatedAt: string;
+export async function cancelOrder(
+  orderId: string,
+  reason?: string,
+): Promise<{ success: boolean; order_id: string; order_status: string }> {
+  return json(
+    await fetch(`${BASE}/orders/cancel/${encodeURIComponent(orderId)}`, {
+      method: "POST",
+      headers: await authHeaders(),
+      body: JSON.stringify({ reason }),
+    }),
+  );
 }
 
 export async function getUserOrders(userId: string): Promise<Order[]> {
   const data = await json<{ success: boolean; orders: Order[] }>(
     await fetch(`${BASE}/orders/user/${encodeURIComponent(userId)}`, {
-      headers: authHeaders(),
+      headers: await authHeaders(),
     }),
   );
   return data.orders;
@@ -296,7 +376,7 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
 
 export async function getOrderStatus(orderId: string): Promise<{
   order_id: string;
-  order_status: string;
+  order_status: OrderStatus;
   eta_minutes: number;
   rider?: {
     name: string;
@@ -306,127 +386,20 @@ export async function getOrderStatus(orderId: string): Promise<{
     current_location?: { lat: number; lng: number };
   } | null;
 }> {
-  const data = await json<{
-    success: boolean;
-    order_id: string;
-    order_status: string;
-    eta_minutes: number;
-    rider?: {
-      name: string;
-      phone?: string;
-      vehicle_number?: string;
-      rider_id?: string;
-      current_location?: { lat: number; lng: number };
-    } | null;
-  }>(
+  return json(
     await fetch(`${BASE}/orders/status/${encodeURIComponent(orderId)}`, {
-      headers: authHeaders(),
+      headers: await authHeaders(),
     }),
   );
-  return data;
 }
 
-export interface OrderTracking {
-  order_id: string;
-  order_status: string;
-  eta_minutes: number;
-  total_amount?: number;
-  payment_status?: string;
-  created_at?: string;
-  warehouse_id?: string;
-  warehouse_name?: string;
-  items?: Array<{
-    product_id: string;
-    qty: number;
-    name?: string;
-    image?: string;
-    price?: number | null;
-    weight?: string;
-  }>;
-  user_location: { lat: number; lng: number };
-  warehouse_location?: { lat: number; lng: number } | null;
-  rider?: {
-    name: string;
-    phone?: string;
-    vehicle_number?: string;
-    rider_id?: string;
-    current_location?: { lat: number; lng: number };
-  } | null;
-}
-
-export async function getOrderTracking(
-  orderId: string,
-): Promise<OrderTracking> {
+export async function getOrderTracking(orderId: string): Promise<OrderTracking> {
   const data = await json<{ success: boolean } & OrderTracking>(
     await fetch(`${BASE}/orders/tracking/${encodeURIComponent(orderId)}`, {
-      headers: authHeaders(),
+      headers: await authHeaders(),
     }),
   );
   return data;
-}
-
-// ── Admin ─────────────────────────────────────────────────────────────────────
-export async function adminGetProducts(): Promise<Product[]> {
-  const data = await json<{ success: boolean; products: Product[] }>(
-    await fetch(`${BASE}/admin/products`, { headers: adminHeaders() }),
-  );
-  return data.products;
-}
-
-export async function adminCreateProduct(
-  data: Omit<Product, "id"> & { stock?: number },
-): Promise<Product> {
-  const result = await json<{ success: boolean; product: Product }>(
-    await fetch(`${BASE}/admin/products`, {
-      method: "POST",
-      headers: adminHeaders(),
-      body: JSON.stringify(data),
-    }),
-  );
-  return result.product;
-}
-
-export async function adminUpdateStock(
-  productId: string,
-  stock: number,
-): Promise<Product> {
-  const data = await json<{ success: boolean; product: Product }>(
-    await fetch(`${BASE}/admin/products/${productId}/stock`, {
-      method: "PUT",
-      headers: adminHeaders(),
-      body: JSON.stringify({ stock }),
-    }),
-  );
-  return data.product;
-}
-
-export async function adminGetOrders(): Promise<Order[]> {
-  const data = await json<{ success: boolean; orders: Order[] }>(
-    await fetch(`${BASE}/admin/orders`, { headers: adminHeaders() }),
-  );
-  return data.orders;
-}
-
-export async function adminUpdateOrderStatus(
-  orderId: string,
-  status: Order["order_status"],
-): Promise<Order> {
-  const data = await json<{ success: boolean; order: Order }>(
-    await fetch(`${BASE}/admin/orders/${orderId}/status`, {
-      method: "PUT",
-      headers: adminHeaders(),
-      body: JSON.stringify({ status }),
-    }),
-  );
-  return data.order;
-}
-
-// ── ETA estimation ────────────────────────────────────────────────────────────
-export interface EtaEstimate {
-  eta_minutes: number;
-  distance_km: number;
-  warehouse_name: string;
-  warehouse_city: string;
 }
 
 export async function estimateEta(
@@ -441,4 +414,58 @@ export async function estimateEta(
       body: JSON.stringify({ lat, lng, item_count: itemCount }),
     }),
   );
+}
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+
+export async function adminGetProducts(): Promise<Product[]> {
+  const data = await json<{ success: boolean; products: Product[] }>(
+    await fetch(`${BASE}/admin/products`, { headers: await adminHeaders() }),
+  );
+  return data.products;
+}
+
+export async function adminCreateProduct(
+  data: Omit<Product, "id"> & { stock?: number },
+): Promise<Product> {
+  const result = await json<{ success: boolean; product: Product }>(
+    await fetch(`${BASE}/admin/products`, {
+      method: "POST",
+      headers: await adminHeaders(),
+      body: JSON.stringify(data),
+    }),
+  );
+  return result.product;
+}
+
+export async function adminUpdateStock(productId: string, stock: number): Promise<Product> {
+  const data = await json<{ success: boolean; product: Product }>(
+    await fetch(`${BASE}/admin/products/${productId}/stock`, {
+      method: "PUT",
+      headers: await adminHeaders(),
+      body: JSON.stringify({ stock }),
+    }),
+  );
+  return data.product;
+}
+
+export async function adminGetOrders(): Promise<Order[]> {
+  const data = await json<{ success: boolean; orders: Order[] }>(
+    await fetch(`${BASE}/admin/orders`, { headers: await adminHeaders() }),
+  );
+  return data.orders;
+}
+
+export async function adminUpdateOrderStatus(
+  orderId: string,
+  status: OrderStatus,
+): Promise<Order> {
+  const data = await json<{ success: boolean; order: Order }>(
+    await fetch(`${BASE}/admin/orders/${orderId}/status`, {
+      method: "PUT",
+      headers: await adminHeaders(),
+      body: JSON.stringify({ status }),
+    }),
+  );
+  return data.order;
 }

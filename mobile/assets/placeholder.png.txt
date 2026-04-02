@@ -1,0 +1,2 @@
+Replace this file with an actual placeholder.png image (transparent or gray box, 200x200px).
+You can generate one with: https://placeholder.pics/svg/200

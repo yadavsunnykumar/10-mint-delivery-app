@@ -54,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     localStorage.removeItem("everest_token");
     localStorage.removeItem("everest_user");
+    localStorage.removeItem("everest_active_orders");
     setUser(null);
     clearCart();
   }, [clearCart]);
