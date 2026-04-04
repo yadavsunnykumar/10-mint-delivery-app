@@ -1,10 +1,10 @@
 /**
  * seed_warehouses.js
- * Upserts real Kathmandu Valley dark-store warehouse locations into MongoDB.
+ * Upserts 6 real Kathmandu Valley dark-store warehouse locations into MongoDB.
  * Run once:  node seed_warehouses.js
  *
- * All coordinates are verified real-world Kathmandu locations.
- * Average motorcycle speed in Kathmandu Valley: ~20 km/h (traffic included).
+ * All coordinates are verified real-world Kathmandu/Lalitpur locations.
+ * Average motorcycle speed in Kathmandu Valley: ~20 km/h (traffic-adjusted).
  */
 
 import mongoose from "mongoose";
@@ -15,10 +15,10 @@ dotenv.config();
 
 const WAREHOUSES = [
   {
-    warehouse_id: "w1",
-    name: "Dark Store – Thamel",
+    warehouse_id: "DS001",
+    name: "Thamel Dark Store",
     location: { lat: 27.7152, lng: 85.3123 }, // Thamel Chowk, central Kathmandu
-    address: "Thamel Chowk, Kathmandu",
+    address: "Near Thamel Chowk, Kathmandu",
     city: "Kathmandu",
     pincode: "44600",
     capacity: 5000,
@@ -26,54 +26,54 @@ const WAREHOUSES = [
     is_active: true,
   },
   {
-    warehouse_id: "w2",
-    name: "Dark Store – Patan",
-    location: { lat: 27.6766, lng: 85.3159 }, // Mangal Bazar, Patan (Lalitpur)
-    address: "Mangal Bazar, Patan",
-    city: "Lalitpur",
-    pincode: "44700",
-    capacity: 4000,
-    current_inventory: 2900,
-    is_active: true,
-  },
-  {
-    warehouse_id: "w3",
-    name: "Dark Store – Baneshwor",
-    location: { lat: 27.6943, lng: 85.3433 }, // New Baneshwor (busy corridor east of ring road)
+    warehouse_id: "DS002",
+    name: "Baneshwor Dark Store",
+    location: { lat: 27.6943, lng: 85.3433 }, // New Baneshwor, busy corridor east of ring road
     address: "New Baneshwor, Kathmandu",
     city: "Kathmandu",
-    pincode: "44600",
+    pincode: "44614",
     capacity: 4500,
     current_inventory: 3200,
     is_active: true,
   },
   {
-    warehouse_id: "w4",
-    name: "Dark Store – Boudha",
-    location: { lat: 27.7215, lng: 85.3619 }, // Boudha Stupa area, NE Kathmandu
-    address: "Boudha, Kathmandu",
+    warehouse_id: "DS003",
+    name: "Maharajgunj Dark Store",
+    location: { lat: 27.7394, lng: 85.3315 }, // Maharajgunj Chowk, north Kathmandu
+    address: "Maharajgunj Chowk, Kathmandu",
     city: "Kathmandu",
     pincode: "44600",
-    capacity: 3500,
-    current_inventory: 2500,
+    capacity: 4000,
+    current_inventory: 2900,
     is_active: true,
   },
   {
-    warehouse_id: "w5",
-    name: "Dark Store – Koteshwor",
+    warehouse_id: "DS004",
+    name: "Koteshwor Dark Store",
     location: { lat: 27.6832, lng: 85.3553 }, // Koteshwor, east ring road junction
     address: "Koteshwor, Kathmandu",
     city: "Kathmandu",
-    pincode: "44600",
+    pincode: "44621",
     capacity: 4000,
     current_inventory: 2800,
     is_active: true,
   },
   {
-    warehouse_id: "w6",
-    name: "Dark Store – Balaju",
-    location: { lat: 27.7357, lng: 85.2989 }, // Balaju, NW Kathmandu
-    address: "Balaju Industrial Area, Kathmandu",
+    warehouse_id: "DS005",
+    name: "Patan Dark Store",
+    location: { lat: 27.6857, lng: 85.3166 }, // Kupondole Height, Lalitpur
+    address: "Kupondole Height, Lalitpur",
+    city: "Lalitpur",
+    pincode: "44700",
+    capacity: 3500,
+    current_inventory: 2500,
+    is_active: true,
+  },
+  {
+    warehouse_id: "DS006",
+    name: "Kalimati Dark Store",
+    location: { lat: 27.6976, lng: 85.3003 }, // Kalimati, west Kathmandu
+    address: "Kalimati, Kathmandu",
     city: "Kathmandu",
     pincode: "44600",
     capacity: 3500,
@@ -95,20 +95,16 @@ async function seed() {
   let updated = 0;
 
   for (const w of WAREHOUSES) {
-    const result = await Warehouse.findOneAndUpdate(
+    await Warehouse.findOneAndUpdate(
       { warehouse_id: w.warehouse_id },
       { $set: w },
       { upsert: true, new: true },
     );
-    if (result.createdAt?.getTime() === result.updatedAt?.getTime()) {
-      created++;
-    } else {
-      updated++;
-    }
     console.log(`  ✓ ${w.name}  (${w.location.lat}, ${w.location.lng})`);
+    updated++;
   }
 
-  console.log(`\nDone — ${created} created, ${updated} updated.`);
+  console.log(`\nDone — ${WAREHOUSES.length} dark stores seeded/updated.`);
   await mongoose.disconnect();
 }
 

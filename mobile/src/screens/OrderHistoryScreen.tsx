@@ -136,7 +136,7 @@ export default function OrderHistoryScreen() {
   const renderOrderCard = ({ item: order }: { item: Order }) => {
     const stepIdx = STATUS_STEPS.indexOf(order.order_status);
     const isActive = !["delivered", "cancelled"].includes(order.order_status);
-    const canCancel = ["created", "accepted"].includes(order.order_status);
+    const canCancel = order.order_status === "created";
     const statusColor = STATUS_COLORS[order.order_status] ?? "#475569";
     const statusBg = STATUS_BG_COLORS[order.order_status] ?? "#F1F5F9";
     const isCancelling = cancellingId === order.order_id;

@@ -6,15 +6,21 @@ export interface CategoryConfig {
 }
 
 export const CATEGORY_TABS: CategoryConfig[] = [
-  { slug: "all", name: "All", backendCategory: null, description: "All Products" },
-  { slug: "cafe", name: "Cafe", backendCategory: "Snacks & Munchies", description: "Snacks, chips, biscuits & more" },
-  { slug: "home", name: "Home", backendCategory: "Home & Cleaning", description: "Home essentials & cleaning supplies" },
-  { slug: "toys", name: "Toys", backendCategory: "Toys & Games", description: "Toys & games for all ages" },
-  { slug: "fresh", name: "Fresh", backendCategory: "Fruits & Vegetables", description: "Fresh fruits & vegetables" },
-  { slug: "electronics", name: "Electronics", backendCategory: "Electronics", description: "Phones, gadgets & accessories" },
-  { slug: "beauty", name: "Beauty", backendCategory: "Beauty & Personal Care", description: "Skincare, makeup & grooming" },
-  { slug: "fashion", name: "Fashion", backendCategory: "Fashion", description: "Clothing, shoes & accessories" },
-  { slug: "kitchen", name: "Dairy", backendCategory: "Dairy, Bread & Eggs", description: "Dairy, bread, eggs & kitchen essentials" },
+  { slug: "all",        name: "All",       backendCategory: null,                  description: "All Products" },
+  { slug: "fresh",      name: "Fresh",     backendCategory: "Fruits & Vegetables", description: "Fresh fruits & vegetables" },
+  { slug: "dairy",      name: "Dairy",     backendCategory: "Dairy",               description: "Milk, curd, eggs & paneer" },
+  { slug: "grocery",    name: "Grocery",   backendCategory: "Grocery",             description: "Staples, oils, spices & grains" },
+  { slug: "snacks",     name: "Snacks",    backendCategory: "Snacks",              description: "Chips, biscuits & namkeen" },
+  { slug: "beverages",  name: "Drinks",    backendCategory: "Beverages",           description: "Tea, coffee, soda & beer" },
+  { slug: "meat",       name: "Meat",      backendCategory: "Meat & Seafood",      description: "Chicken, mutton & fish" },
+  { slug: "home",       name: "Home",      backendCategory: "Household",           description: "Cleaning & household essentials" },
+  { slug: "beauty",     name: "Beauty",    backendCategory: "Personal Care",       description: "Skincare, haircare & grooming" },
+  { slug: "baby",       name: "Baby",      backendCategory: "Baby & Kids",         description: "Diapers, baby food & care" },
+  { slug: "health",     name: "Health",    backendCategory: "Health & Wellness",   description: "Vitamins, first aid & wellness" },
+  { slug: "puja",       name: "Puja",      backendCategory: "Puja & Festival",     description: "Incense, diyo & festival items" },
+  { slug: "electronics",name: "Electronics",backendCategory: "Electronics",        description: "Cables, chargers & accessories" },
+  { slug: "bakery",     name: "Bakery",    backendCategory: "Bakery",              description: "Bread, snacks & baked goods" },
+  { slug: "stationery", name: "Stationery",backendCategory: "Stationery",          description: "Pens, notebooks & batteries" },
 ];
 
 export function getCategoryBySlug(slug: string): CategoryConfig | undefined {
@@ -30,32 +36,37 @@ export interface GridCategoryConfig {
 }
 
 export const GRID_CATEGORIES: GridCategoryConfig[] = [
-  { slug: "fruits-vegetables", name: "Fruits & Veg", backendCategory: "Fruits & Vegetables", description: "Fresh fruits & vegetables", emoji: "🥦" },
-  { slug: "dairy-bread-eggs", name: "Dairy & Eggs", backendCategory: "Dairy, Bread & Eggs", description: "Milk, bread, eggs & more", emoji: "🥛" },
-  { slug: "atta-rice-dals", name: "Atta & Rice", backendCategory: "Atta, Rice & Dals", description: "Staples, grains & pulses", emoji: "🌾" },
-  { slug: "masala-dry-fruits", name: "Masala", backendCategory: "Masala & Dry Fruits", description: "Spices, masalas & dry fruits", emoji: "🌶️" },
-  { slug: "breakfast-sauces", name: "Breakfast", backendCategory: "Breakfast & Sauces", description: "Jams, spreads, cereals & sauces", emoji: "🍳" },
-  { slug: "packaged-food", name: "Packaged", backendCategory: "Instant Food", description: "Ready-to-eat & packaged items", emoji: "🍜" },
-  { slug: "tea-coffee", name: "Tea & Coffee", backendCategory: "Beverages", description: "Tea, coffee & hot beverages", emoji: "☕" },
-  { slug: "ice-creams", name: "Ice Creams", backendCategory: "Ice Creams", description: "Ice creams & frozen desserts", emoji: "🍦" },
-  { slug: "frozen-food", name: "Frozen", backendCategory: "Frozen Food", description: "Frozen meals & snacks", emoji: "❄️" },
-  { slug: "biscuits-snacks", name: "Snacks", backendCategory: "Snacks & Munchies", description: "Biscuits, chips & namkeen", emoji: "🍿" },
+  { slug: "fruits-vegetables",  name: "Fruits & Veg",    backendCategory: "Fruits & Vegetables", description: "Fresh fruits & vegetables", emoji: "🥦" },
+  { slug: "dairy-bread-eggs",   name: "Dairy & Eggs",    backendCategory: "Dairy",               description: "Milk, curd, eggs & paneer", emoji: "🥛" },
+  { slug: "atta-rice-dals",     name: "Atta & Rice",     backendCategory: "Grocery",             description: "Staples, grains & pulses", emoji: "🌾" },
+  { slug: "meat-seafood",       name: "Meat & Fish",     backendCategory: "Meat & Seafood",      description: "Chicken, mutton & fresh fish", emoji: "🍗" },
+  { slug: "biscuits-snacks",    name: "Snacks",          backendCategory: "Snacks",              description: "Chips, chocolates & namkeen", emoji: "🍿" },
+  { slug: "tea-coffee",         name: "Tea & Coffee",    backendCategory: "Beverages",           description: "Ilam tea, coffee & drinks", emoji: "☕" },
+  { slug: "packaged-food",      name: "Instant Food",    backendCategory: "Grocery",             description: "Noodles, chiura & ready-to-eat", emoji: "🍜" },
+  { slug: "puja-festival",      name: "Puja Items",      backendCategory: "Puja & Festival",     description: "Agarbatti, diyo & tika", emoji: "🪔" },
+  { slug: "frozen-food",        name: "Frozen",          backendCategory: "Frozen Food",         description: "Frozen momos & ready-to-cook", emoji: "❄️" },
+  { slug: "health-wellness",    name: "Health",          backendCategory: "Health & Wellness",   description: "Vitamins, ORS & first aid", emoji: "💊" },
 ];
 
 export function getGridCategoryBySlug(slug: string): GridCategoryConfig | undefined {
   return GRID_CATEGORIES.find((c) => c.slug === slug);
 }
 
-// Additional categories not shown in the home grid but accessible from CategoriesScreen
+// Additional categories accessible from CategoriesScreen and ShopScreen
 const EXTRA_SHOP_CATEGORIES: GridCategoryConfig[] = [
-  { slug: "home-cleaning", name: "Home & Cleaning", backendCategory: "Home & Cleaning", description: "Cleaners, detergents & household essentials", emoji: "🧹" },
-  { slug: "beauty-personal-care", name: "Beauty & Personal Care", backendCategory: "Beauty & Personal Care", description: "Skincare, haircare & grooming", emoji: "💄" },
-  { slug: "electronics", name: "Electronics", backendCategory: "Electronics", description: "Cables, accessories, bulbs & gadgets", emoji: "📱" },
-  { slug: "toys-games", name: "Toys & Games", backendCategory: "Toys & Games", description: "Toys, board games & activity kits", emoji: "🧸" },
-  { slug: "fashion", name: "Fashion", backendCategory: "Fashion", description: "Clothing, footwear & accessories", emoji: "👗" },
+  { slug: "home-cleaning",       name: "Home & Cleaning",     backendCategory: "Household",       description: "Detergents, cleaners & pest control", emoji: "🧹" },
+  { slug: "beauty-personal-care",name: "Beauty & Personal Care",backendCategory: "Personal Care", description: "Skincare, haircare & grooming", emoji: "🧴" },
+  { slug: "bakery",              name: "Bakery & Bread",      backendCategory: "Bakery",          description: "Fresh bread, snacks & baked goods", emoji: "🍞" },
+  { slug: "baby-kids",           name: "Baby Care",           backendCategory: "Baby & Kids",     description: "Diapers, baby food & care", emoji: "👶" },
+  { slug: "electronics",         name: "Electronics",         backendCategory: "Electronics",      description: "Cables, chargers & accessories", emoji: "🔌" },
+  { slug: "stationery",          name: "Stationery & Office", backendCategory: "Stationery",       description: "Pens, notebooks & batteries", emoji: "✏️" },
+  { slug: "masala-dry-fruits",   name: "Masala & Spices",     backendCategory: "Grocery",         description: "Turmeric, cumin, timur & spice mixes", emoji: "🌶️" },
 ];
 
 // Universal slug lookup covering all navigable category pages
 export function getShopCategoryBySlug(slug: string): GridCategoryConfig | undefined {
-  return GRID_CATEGORIES.find((c) => c.slug === slug) ?? EXTRA_SHOP_CATEGORIES.find((c) => c.slug === slug);
+  return (
+    GRID_CATEGORIES.find((c) => c.slug === slug) ??
+    EXTRA_SHOP_CATEGORIES.find((c) => c.slug === slug)
+  );
 }

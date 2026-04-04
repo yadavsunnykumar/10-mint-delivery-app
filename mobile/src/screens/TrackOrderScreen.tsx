@@ -142,7 +142,7 @@ export default function TrackOrderScreen() {
   const stepIdx = STATUS_STEPS.findIndex((s) => s.key === tracking.order_status);
   const isDelivered = tracking.order_status === "delivered";
   const isCancelled = tracking.order_status === "cancelled";
-  const canCancel = ["created", "accepted"].includes(tracking.order_status);
+  const canCancel = tracking.order_status === "created";
 
   const mapRegion = {
     latitude: tracking.user_location.lat,

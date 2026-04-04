@@ -31,7 +31,7 @@ const OrderSchema = new mongoose.Schema(
     },
     payment_method: {
       type: String,
-      enum: ["upi", "card", "cod", "wallet"],
+      enum: ["esewa", "khalti", "fonepay", "cod", "card", "imepay", "upi", "wallet"],
       default: "cod",
     },
 

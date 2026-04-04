@@ -45,6 +45,8 @@ export type OrderStatus =
   | "delivered"
   | "cancelled";
 
+export type PaymentMethodType = "esewa" | "khalti" | "fonepay" | "cod" | "card" | "imepay" | "upi" | "wallet";
+
 export interface Order {
   _id: string;
   order_id: string;
@@ -55,7 +57,7 @@ export interface Order {
   promo_code?: string | null;
   promo_discount?: number;
   payment_status: "pending" | "paid" | "failed";
-  payment_method?: "upi" | "card" | "cod" | "wallet";
+  payment_method?: PaymentMethodType;
   order_status: OrderStatus;
   eta_minutes?: number;
   delivery_instructions?: string;
@@ -338,7 +340,7 @@ export async function placeOrder(data: {
   user_location: { lat: number; lng: number };
   items: OrderItem[];
   total_amount: number;
-  payment_method?: "upi" | "card" | "cod" | "wallet";
+  payment_method?: PaymentMethodType;
   promo_code?: string | null;
   promo_discount?: number;
   delivery_instructions?: string;

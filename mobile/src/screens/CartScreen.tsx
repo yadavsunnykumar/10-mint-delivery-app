@@ -9,6 +9,7 @@ import {
   Alert,
   ActivityIndicator,
   TextInput,
+  ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,7 +19,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useLocation } from "@/context/LocationContext";
-import PaymentModal from "@/components/PaymentModal";
+import PaymentModal, { PaymentMethod } from "@/components/PaymentModal";
 import {
   BRAND_COLORS,
   CURRENCY_SYMBOL,
@@ -26,7 +27,10 @@ import {
   DELIVERY_FREE_ABOVE,
   PROMO_CODES,
 } from "@/lib/constants";
-import { getWarehouses, placeOrder, clearCartApi, CartItem } from "@/lib/api";
+import { getWarehouses, placeOrder, clearCartApi, fetchProducts, getUserOrders, CartItem, Product } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import ProductCard from "@/components/ProductCard";
+import ProductDetailModal from "@/components/ProductDetailModal";
 import type { RootStackParamList } from "@/navigation/AppNavigator";
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -44,6 +48,27 @@ export default function CartScreen() {
   const [promoError, setPromoError] = useState("");
   const [instructions, setInstructions] = useState("");
   const [showInstructions, setShowInstructions] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  // Derive category from cart items for suggestions
+  const cartCategories = [...new Set(cartItems.map((i) => i.product?.category).filter(Boolean))] as string[];
+  const suggestCategory = cartCategories[0] ?? null;
+
+  // Also pull from past orders to suggest repeat purchases
+  const { data: pastOrders = [] } = useQuery({
+    queryKey: ["orders", user?.user_id],
+    queryFn: () => getUserOrders(user!.user_id),
+    enabled: !!user && cartItems.length === 0,
+    staleTime: 60_000,
+  });
+  const pastCategory = pastOrders[0]?.items?.[0]?.product_id ? null : null; // placeholder
+
+  // Suggested products — based on current cart category, else popular
+  const { data: suggestionsData } = useQuery({
+    queryKey: ["suggestions", suggestCategory],
+    queryFn: () => fetchProducts(suggestCategory ? { category: suggestCategory, limit: 10 } : { sort: "popular", limit: 10 }),
+    staleTime: 120_000,
+  });
 
   const promoData = appliedPromo ? PROMO_CODES[appliedPromo] : null;
   const promoDiscount = promoData
@@ -88,7 +113,7 @@ export default function CartScreen() {
     setPaymentVisible(true);
   };
 
-  const handlePaymentSuccess = async (method: "upi" | "card" | "cod") => {
+  const handlePaymentSuccess = async (method: PaymentMethod) => {
     setPlacing(true);
     try {
       const warehouses = await getWarehouses();
@@ -163,19 +188,89 @@ export default function CartScreen() {
   }
 
   if (cartItems.length === 0) {
+    const suggestions = suggestionsData?.products ?? [];
     return (
       <SafeAreaView style={s.container} edges={["top"]}>
         <View style={s.headerBar}>
           <Text style={s.headerTitle}>My Cart</Text>
         </View>
-        <View style={s.emptyContainer}>
-          <Text style={s.emptyEmoji}>🛒</Text>
-          <Text style={s.emptyTitle}>Your cart is empty</Text>
-          <Text style={s.emptySub}>Add items to get started</Text>
-          <TouchableOpacity style={s.actionBtn} onPress={() => navigation.navigate("Main")}>
-            <Text style={s.actionBtnText}>Shop Now</Text>
-          </TouchableOpacity>
-        </View>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+          {/* Empty state hero */}
+          <View style={s.emptyHero}>
+            <Text style={s.emptyEmoji}>🛒</Text>
+            <Text style={s.emptyTitle}>Your cart is empty</Text>
+            <Text style={s.emptySub}>Add items to get started</Text>
+            <View style={s.shopBtnRow}>
+              <TouchableOpacity
+                style={s.actionBtn}
+                onPress={() => {
+                  // Navigate to Home tab which shows all products
+                  navigation.navigate("Main");
+                }}
+              >
+                <Ionicons name="storefront-outline" size={16} color="#fff" />
+                <Text style={s.actionBtnText}>Shop Now</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={s.browseBtn}
+                onPress={() => navigation.navigate("SearchResults", { query: "" })}
+              >
+                <Ionicons name="search-outline" size={16} color={BRAND_COLORS.blue} />
+                <Text style={s.browseBtnText}>Search</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Quick category shortcuts */}
+          <View style={s.quickCatsSection}>
+            <Text style={s.suggestTitle}>Browse Categories</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.quickCatsScroll}>
+              {[
+                { label: "🥦 Vegetables", slug: "fruits-vegetables" },
+                { label: "🥛 Dairy",      slug: "dairy-bread-eggs" },
+                { label: "🍜 Noodles",    slug: "packaged-food" },
+                { label: "🍿 Snacks",     slug: "biscuits-snacks" },
+                { label: "🍗 Meat",       slug: "meat-seafood" },
+                { label: "🪔 Puja",       slug: "puja-festival" },
+                { label: "💊 Health",     slug: "health-wellness" },
+              ].map((cat) => (
+                <TouchableOpacity
+                  key={cat.slug}
+                  style={s.quickCatChip}
+                  onPress={() => navigation.navigate("Shop", { slug: cat.slug })}
+                >
+                  <Text style={s.quickCatText}>{cat.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Suggested products */}
+          {suggestions.length > 0 && (
+            <View style={s.suggestSection}>
+              <View style={s.suggestHeader}>
+                <Text style={s.suggestTitle}>
+                  {suggestCategory ? `More from ${suggestCategory}` : "Popular Right Now"}
+                </Text>
+                <TouchableOpacity onPress={() => navigation.navigate("Main")}>
+                  <Text style={s.seeAllText}>See all</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={s.suggestGrid}>
+                {suggestions.slice(0, 6).map((product) => (
+                  <View key={product.id} style={s.suggestCardWrapper}>
+                    <ProductCard product={product} onPress={setSelectedProduct} />
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+        </ScrollView>
+
+        <ProductDetailModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
       </SafeAreaView>
     );
   }
@@ -339,8 +434,40 @@ export default function CartScreen() {
                 </Text>
               )}
             </View>
+
+            {/* You may also like */}
+            {(suggestionsData?.products ?? []).filter(
+              (p) => !cartItems.some((c) => c.product_id === p.id)
+            ).length > 0 && (
+              <View style={s.upsellSection}>
+                <View style={s.suggestHeader}>
+                  <Text style={s.suggestTitle}>You may also like</Text>
+                  <TouchableOpacity onPress={() => suggestCategory
+                    ? navigation.navigate("Shop", { slug: suggestCategory.toLowerCase().replace(/ /g, "-") })
+                    : navigation.navigate("Main")
+                  }>
+                    <Text style={s.seeAllText}>See all</Text>
+                  </TouchableOpacity>
+                </View>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.upsellScroll}>
+                  {(suggestionsData?.products ?? [])
+                    .filter((p) => !cartItems.some((c) => c.product_id === p.id))
+                    .slice(0, 8)
+                    .map((product) => (
+                      <View key={product.id} style={s.upsellCardWrapper}>
+                        <ProductCard product={product} onPress={setSelectedProduct} />
+                      </View>
+                    ))}
+                </ScrollView>
+              </View>
+            )}
           </View>
         )}
+      />
+
+      <ProductDetailModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
       />
 
       {/* Checkout bar */}
@@ -560,20 +687,78 @@ const styles = (
       paddingVertical: 13,
     },
     checkoutBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
+    emptyHero: {
+      alignItems: "center",
+      paddingTop: 48,
+      paddingBottom: 28,
+      paddingHorizontal: 32,
+    },
+    emptyEmoji: { fontSize: 64, marginBottom: 16 },
+    emptyTitle: { fontSize: 20, fontWeight: "700", color: colors.text, marginBottom: 8 },
+    emptySub: { fontSize: 14, color: colors.subtext, marginBottom: 24, textAlign: "center" },
+    shopBtnRow: { flexDirection: "row", gap: 12 },
+    actionBtn: {
+      backgroundColor: BRAND_COLORS.blue,
+      borderRadius: 14,
+      paddingHorizontal: 24,
+      paddingVertical: 13,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    actionBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
+    browseBtn: {
+      borderRadius: 14,
+      paddingHorizontal: 20,
+      paddingVertical: 13,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      borderWidth: 1.5,
+      borderColor: BRAND_COLORS.blue,
+    },
+    browseBtnText: { color: BRAND_COLORS.blue, fontWeight: "700", fontSize: 15 },
+    quickCatsSection: { paddingBottom: 8 },
+    quickCatsScroll: { paddingHorizontal: 16, gap: 8 },
+    quickCatChip: {
+      paddingHorizontal: 14,
+      paddingVertical: 9,
+      borderRadius: 20,
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    quickCatText: { fontSize: 13, fontWeight: "600", color: colors.text },
+    suggestSection: { paddingTop: 8 },
+    suggestHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      marginBottom: 10,
+    },
+    suggestTitle: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: colors.text,
+      paddingHorizontal: 16,
+      paddingBottom: 10,
+    },
+    seeAllText: { fontSize: 13, color: BRAND_COLORS.blue, fontWeight: "600" },
+    suggestGrid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      paddingHorizontal: 12,
+      gap: 0,
+    },
+    suggestCardWrapper: { width: "50%" },
+    upsellSection: { marginTop: 16, paddingBottom: 8 },
+    upsellScroll: { paddingHorizontal: 16, gap: 10 },
+    upsellCardWrapper: { width: 160 },
     emptyContainer: {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
       padding: 32,
     },
-    emptyEmoji: { fontSize: 64, marginBottom: 16 },
-    emptyTitle: { fontSize: 20, fontWeight: "700", color: colors.text, marginBottom: 8 },
-    emptySub: { fontSize: 14, color: colors.subtext, marginBottom: 24 },
-    actionBtn: {
-      backgroundColor: BRAND_COLORS.blue,
-      borderRadius: 14,
-      paddingHorizontal: 32,
-      paddingVertical: 13,
-    },
-    actionBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
   });

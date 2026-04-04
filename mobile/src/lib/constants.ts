@@ -4,9 +4,12 @@
 
 export { API_BASE_URL, SOCKET_URL } from "./config";
 
-export const APP_NAME = "Everest Dash";
-export const APP_TAGLINE = "10-Minute Delivery";
+export const APP_NAME = "DaakDelivery";
+export const APP_TAGLINE = "Kathmandu ko sab kuch, 10 minutema!";
 export const APP_VERSION = "1.0.0";
+export const APP_CITY = "Kathmandu";
+export const APP_COUNTRY = "Nepal";
+export const DELIVERY_PROMISE_MINUTES = 10;
 
 // Admin key is read from secure env, never committed in source
 export const ADMIN_KEY =
@@ -38,8 +41,10 @@ export const BRAND_COLORS = {
   error: "#DC2626",
 } as const;
 
-export const DELIVERY_FEE = 25;
-export const DELIVERY_FREE_ABOVE = 299;
+export const DELIVERY_FEE = 49;
+export const DELIVERY_FREE_ABOVE = 599;
+export const PACKAGING_FEE = 5;
+export const SURGE_FEE = 30;
 
 export const ORDER_STATUSES = [
   "created",
@@ -91,45 +96,22 @@ export const PRODUCT_CATEGORIES = [
 
 export const SECTION_CATEGORIES: {
   title: string;
-  key: string;
-  slug?: string;
+  key: string;  // maps to backend category
+  slug?: string; // maps to ShopScreen slug
 }[] = [
-  {
-    title: "Snacks & Munchies",
-    key: "Snacks & Munchies",
-    slug: "biscuits-snacks",
-  },
-  {
-    title: "Dairy, Bread & Eggs",
-    key: "Dairy, Bread & Eggs",
-    slug: "dairy-bread-eggs",
-  },
-  { title: "Beverages", key: "Beverages", slug: "tea-coffee" },
-  { title: "Instant Food", key: "Instant Food", slug: "packaged-food" },
-  {
-    title: "Fruits & Vegetables",
-    key: "Fruits & Vegetables",
-    slug: "fruits-vegetables",
-  },
-  {
-    title: "Atta, Rice & Dals",
-    key: "Atta, Rice & Dals",
-    slug: "atta-rice-dals",
-  },
-  {
-    title: "Masala & Dry Fruits",
-    key: "Masala & Dry Fruits",
-    slug: "masala-dry-fruits",
-  },
-  {
-    title: "Breakfast & Sauces",
-    key: "Breakfast & Sauces",
-    slug: "breakfast-sauces",
-  },
-  { title: "Ice Creams", key: "Ice Creams", slug: "ice-creams" },
-  { title: "Frozen Food", key: "Frozen Food", slug: "frozen-food" },
-  { title: "Home & Cleaning", key: "Home & Cleaning", slug: "home-cleaning" },
-  { title: "Beauty & Personal Care", key: "Beauty & Personal Care", slug: "beauty-personal-care" },
+  { title: "Fresh Vegetables & Fruits", key: "Fruits & Vegetables",  slug: "fruits-vegetables" },
+  { title: "Dairy, Curd & Eggs",        key: "Dairy",                slug: "dairy-bread-eggs" },
+  { title: "Wai Wai & Instant Food",    key: "Grocery",              slug: "packaged-food" },
+  { title: "Snacks & Namkeen",          key: "Snacks",               slug: "biscuits-snacks" },
+  { title: "Beverages & Drinks",        key: "Beverages",            slug: "tea-coffee" },
+  { title: "Fresh Meat & Seafood",      key: "Meat & Seafood",       slug: "meat-seafood" },
+  { title: "Puja & Festival Items",     key: "Puja & Festival",      slug: "puja-festival" },
+  { title: "Home & Cleaning",           key: "Household",            slug: "home-cleaning" },
+  { title: "Personal Care",             key: "Personal Care",        slug: "beauty-personal-care" },
+  { title: "Baby Care",                 key: "Baby & Kids",          slug: "baby-kids" },
+  { title: "Health & Wellness",         key: "Health & Wellness",    slug: "health-wellness" },
+  { title: "Bakery & Bread",            key: "Bakery",               slug: "bakery" },
+  { title: "Frozen Food",               key: "Frozen Food",          slug: "frozen-food" },
 ];
 
 export const ALL_CATEGORIES: {
@@ -139,111 +121,22 @@ export const ALL_CATEGORIES: {
   desc: string;
   count: string;
 }[] = [
-  {
-    name: "Fruits & Vegetables",
-    slug: "fruits-vegetables",
-    emoji: "🥦",
-    desc: "Farm-fresh produce delivered in minutes",
-    count: "200+",
-  },
-  {
-    name: "Dairy, Bread & Eggs",
-    slug: "dairy-bread-eggs",
-    emoji: "🥛",
-    desc: "Milk, butter, curd, bread and eggs",
-    count: "150+",
-  },
-  {
-    name: "Snacks & Munchies",
-    slug: "biscuits-snacks",
-    emoji: "🍿",
-    desc: "Chips, biscuits, namkeen and more",
-    count: "300+",
-  },
-  {
-    name: "Beverages",
-    slug: "tea-coffee",
-    emoji: "☕",
-    desc: "Juices, sodas, tea, coffee and energy drinks",
-    count: "120+",
-  },
-  {
-    name: "Instant Food",
-    slug: "packaged-food",
-    emoji: "🍜",
-    desc: "Ready-to-eat meals, noodles & soups",
-    count: "180+",
-  },
-  {
-    name: "Atta, Rice & Dals",
-    slug: "atta-rice-dals",
-    emoji: "🌾",
-    desc: "Staples, grains, pulses and flours",
-    count: "100+",
-  },
-  {
-    name: "Masala & Dry Fruits",
-    slug: "masala-dry-fruits",
-    emoji: "🌶️",
-    desc: "Spices, masalas, nuts and dry fruits",
-    count: "90+",
-  },
-  {
-    name: "Breakfast & Sauces",
-    slug: "breakfast-sauces",
-    emoji: "🍳",
-    desc: "Cereals, oats, jams, spreads and sauces",
-    count: "110+",
-  },
-  {
-    name: "Ice Creams",
-    slug: "ice-creams",
-    emoji: "🍦",
-    desc: "Ice creams, kulfi and frozen desserts",
-    count: "60+",
-  },
-  {
-    name: "Frozen Food",
-    slug: "frozen-food",
-    emoji: "❄️",
-    desc: "Frozen veggies, momos, nuggets and more",
-    count: "80+",
-  },
-  {
-    name: "Home & Cleaning",
-    slug: "home-cleaning",
-    emoji: "🧹",
-    desc: "Cleaners, detergents and household essentials",
-    count: "200+",
-  },
-  {
-    name: "Beauty & Personal Care",
-    slug: "beauty-personal-care",
-    emoji: "💄",
-    desc: "Skincare, haircare, grooming and makeup",
-    count: "250+",
-  },
-  {
-    name: "Electronics",
-    slug: "electronics",
-    emoji: "📱",
-    desc: "Cables, accessories, bulbs and gadgets",
-    count: "70+",
-  },
-  {
-    name: "Toys & Games",
-    slug: "toys-games",
-    emoji: "🧸",
-    desc: "Toys, board games and activity kits",
-    count: "90+",
-  },
-  {
-    name: "Fashion",
-    slug: "fashion",
-    emoji: "👗",
-    desc: "Clothing, footwear and accessories",
-    count: "400+",
-  },
+  { name: "Fruits & Vegetables",   slug: "fruits-vegetables",   emoji: "🥦", desc: "Farm-fresh produce from local Nepali farms",         count: "50+" },
+  { name: "Dairy & Eggs",          slug: "dairy-bread-eggs",    emoji: "🥛", desc: "Sujal, DDC milk, curd, paneer and fresh eggs",       count: "40+" },
+  { name: "Meat & Seafood",        slug: "meat-seafood",        emoji: "🍗", desc: "Fresh chicken, khasi, buff and fish",                count: "15+" },
+  { name: "Grocery & Staples",     slug: "atta-rice-dals",      emoji: "🌾", desc: "Rice, daal, atta, oils and cooking essentials",      count: "60+" },
+  { name: "Instant & Packaged",    slug: "packaged-food",       emoji: "🍜", desc: "Wai Wai, Rara, chiura and ready-to-cook items",     count: "30+" },
+  { name: "Beverages",             slug: "tea-coffee",          emoji: "☕", desc: "Ilam tea, Gorkha beer, Coke and energy drinks",     count: "35+" },
+  { name: "Snacks & Namkeen",      slug: "biscuits-snacks",     emoji: "🍿", desc: "Kurkure, Lays, bhuja and Nepali namkeen",           count: "30+" },
+  { name: "Puja & Festival",       slug: "puja-festival",       emoji: "🪔", desc: "Agarbatti, diyo, tika and sayapatri maala",         count: "15+" },
+  { name: "Home & Cleaning",       slug: "home-cleaning",       emoji: "🧹", desc: "Surf Excel, Vim, Harpic and Dettol",                count: "25+" },
+  { name: "Beauty & Personal Care",slug: "beauty-personal-care",emoji: "🧴", desc: "Sunsilk, Nivea, Colgate and Patanjali",             count: "30+" },
+  { name: "Baby Care",             slug: "baby-kids",           emoji: "👶", desc: "Pampers, Huggies, Cerelac and Johnson's",           count: "15+" },
+  { name: "Health & Wellness",     slug: "health-wellness",     emoji: "💊", desc: "ORS, honey, Chyawanprash and Vitamin C",            count: "20+" },
+  { name: "Bakery & Bread",        slug: "bakery",              emoji: "🍞", desc: "Fresh bread, sel roti mix and samosa",              count: "10+" },
+  { name: "Electronics",           slug: "electronics",         emoji: "🔌", desc: "Type-C cables, chargers and earphones",             count: "10+" },
+  { name: "Stationery & Office",   slug: "stationery",          emoji: "✏️", desc: "Pens, notebooks and batteries",                    count: "10+" },
+  { name: "Frozen Food",           slug: "frozen-food",         emoji: "❄️", desc: "Frozen buff momos and ready-to-heat meals",        count: "10+" },
 ];
 
 export const CITIES: {
@@ -331,57 +224,86 @@ export const PROMO_BANNERS: {
   gradient: [string, string];
   emoji: string;
   slug?: string;
+  promoCode?: string;
 }[] = [
   {
-    id: "free-delivery",
-    title: "Free Delivery",
-    subtitle: `On orders above ${CURRENCY_SYMBOL}299`,
+    id: "new-user",
+    title: "New User Offer",
+    subtitle: "20% off (up to रू200) on 1st order",
     gradient: ["#1E3A8A", "#3B82F6"],
-    emoji: "🚀",
+    emoji: "🎉",
+    promoCode: "NEWKTM",
   },
   {
     id: "fresh-veggies",
-    title: "Fresh Veggies",
-    subtitle: "Farm to door in 10 min",
+    title: "Fresh from the Farm",
+    subtitle: "Vegetables & fruits in 10 min",
     gradient: ["#16A34A", "#22C55E"],
     emoji: "🥦",
     slug: "fruits-vegetables",
   },
   {
     id: "dairy-deals",
-    title: "Dairy Deals",
-    subtitle: "Up to 30% off on milk & eggs",
+    title: "Dairy Combo Saver",
+    subtitle: "रू50 off on 3+ dairy products",
     gradient: ["#D97706", "#F59E0B"],
     emoji: "🥛",
     slug: "dairy-bread-eggs",
+    promoCode: "DAIRY50",
   },
   {
-    id: "snack-attack",
-    title: "Snack Attack",
-    subtitle: "New arrivals every week",
+    id: "digital-pay",
+    title: "eSewa / Khalti Cashback",
+    subtitle: "10% back (up to रू150) on digital pay",
     gradient: ["#7C3AED", "#A855F7"],
-    emoji: "🍿",
-    slug: "biscuits-snacks",
+    emoji: "📱",
+    promoCode: "DIGITALPAY",
   },
   {
-    id: "instant-deals",
-    title: "Instant Meals",
-    subtitle: "Ready in minutes, delivered in 10",
+    id: "puja-items",
+    title: "Puja & Festival Items",
+    subtitle: "Diyo, agarbatti & tika — delivered fast",
     gradient: ["#BE185D", "#EC4899"],
-    emoji: "🍜",
-    slug: "packaged-food",
+    emoji: "🪔",
+    slug: "puja-festival",
   },
 ];
 
 // ── Valid promo codes (ideally fetched from server; static fallback) ──────────
-export const PROMO_CODES: Record<string, { discount: number; type: "flat" | "percent"; minOrder?: number; description: string }> = {
-  WELCOME50: { discount: 50, type: "flat", minOrder: 200, description: "रू50 off on your first order" },
-  SAVE10:    { discount: 10, type: "percent", minOrder: 300, description: "10% off on orders above रू300" },
-  FREESHIP:  { discount: 25, type: "flat", description: "Free delivery on any order" },
+export const PROMO_CODES: Record<string, {
+  discount: number;
+  type: "flat" | "percent" | "free_delivery";
+  minOrder?: number;
+  maxDiscount?: number;
+  description: string;
+}> = {
+  NEWKTM:      { discount: 20, type: "percent", minOrder: 300, maxDiscount: 200, description: "20% off (up to रू200) on your first order" },
+  WEEKENDFREE: { discount: 0,  type: "free_delivery", minOrder: 499, description: "Free delivery on orders above रू499 (weekends)" },
+  DASHAIN15:   { discount: 15, type: "percent", minOrder: 500, maxDiscount: 300, description: "15% off on orders above रू500 (Dashain special)" },
+  DAIRY50:     { discount: 50, type: "flat", minOrder: 250, description: "रू50 off when you buy 3+ dairy products" },
+  DIGITALPAY:  { discount: 10, type: "percent", minOrder: 400, maxDiscount: 150, description: "10% cashback (up to रू150) on eSewa/Khalti payment" },
+  WELCOME50:   { discount: 50, type: "flat", minOrder: 200, description: "रू50 off on your first order" },
+  SAVE10:      { discount: 10, type: "percent", minOrder: 300, description: "10% off on orders above रू300" },
 };
+
+// ── Payment methods available in Nepal ────────────────────────────────────────
+export const PAYMENT_METHODS = [
+  { id: "esewa",    label: "eSewa",         icon: "phone-portrait-outline", popular: true },
+  { id: "khalti",   label: "Khalti",        icon: "phone-portrait-outline", popular: true },
+  { id: "fonepay",  label: "FonePay QR",    icon: "qr-code-outline",        popular: true },
+  { id: "cod",      label: "Cash on Delivery", icon: "cash-outline",         popular: true },
+  { id: "card",     label: "Debit / Credit Card", icon: "card-outline",      popular: false },
+  { id: "imepay",   label: "IME Pay",       icon: "phone-portrait-outline", popular: false },
+] as const;
+
+export type PaymentMethodId = typeof PAYMENT_METHODS[number]["id"];
 
 // ── Delivery config ───────────────────────────────────────────────────────────
 export const DELIVERY_FEE_CONFIG = {
   fee: DELIVERY_FEE,
   freeAbove: DELIVERY_FREE_ABOVE,
+  packagingFee: PACKAGING_FEE,
+  surgeFee: SURGE_FEE,
+  estimatedMinutes: DELIVERY_PROMISE_MINUTES,
+  maxDistanceKm: 3,
 } as const;
